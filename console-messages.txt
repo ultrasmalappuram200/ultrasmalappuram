@@ -1,0 +1,150 @@
+[HMR] connected
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 144ms
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 181ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 250ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 796ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 192ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 332ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 209ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 291ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 326ms
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/matches?id=eq.bc9190dd-0c79-43f0-a004-d4d15b6b6430:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error deleting match: Object
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/matches?select=*:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error adding match: Object
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/matches?id=eq.bc9190dd-0c79-43f0-a004-d4d15b6b6430:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error deleting match: Object
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/matches?id=eq.bc9190dd-0c79-43f0-a004-d4d15b6b6430:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error updating match: Object
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/standings?id=eq.22ab3752-9efc-4e6e-88da-13c856c59dd7:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error updating standing: Object
+overrideMethod @ hook.js:608
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 278ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 204ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 686ms
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 126ms
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 Checking admin status for: aef07375-0e38-41b4-93d9-f045c1c96620 aneesaboo123@gmail.com
+forward-logs-shared.ts:95 Email is admin email, granting admin access
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 231ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 363ms
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 411ms
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/standings?id=eq.22ab3752-9efc-4e6e-88da-13c856c59dd7:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error updating standing: Object
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/standings?select=*:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error adding standing: Object
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+hook.js:608 'oklab(0 0 0 / 0)' is not an animatable color. Use the equivalent color code instead.. For more information and steps for solving, visit https://motion.dev/troubleshooting/color-not-animatable
+overrideMethod @ hook.js:608
+njugepcmpuqbgfbahzng.supabase.co/rest/v1/matches?select=*:1  Failed to load resource: the server responded with a status of 500 ()
+hook.js:608 Error adding match: Object
