@@ -70,7 +70,7 @@ const About = () => {
                 <span className="text-orange-400 font-semibold">Ultras Malappuram</span> 
                 {" "}is the official supporters group of{" "}
                 <span className="text-white font-semibold">Malappuram FC</span>,
-                proudly representing our district in the{" "}
+                proudly representing our districts in the{" "}
                 <span className="text-orange-400 font-semibold">Super League Kerala</span>.
               </p>
 
