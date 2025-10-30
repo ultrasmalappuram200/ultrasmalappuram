@@ -32,10 +32,10 @@ const AdminLogin = () => {
         console.log('Login successful, checking admin status...');
         console.log('Current user:', user);
         console.log('Current isAdmin:', isAdmin);
-        console.log('Result isAdmin:', result.isAdmin);
-        
-        // Check if user is admin and redirect
-        if (result.isAdmin) {
+        // Removed: console.log('Result isAdmin:', result.isAdmin);
+        // Removed: if (result.isAdmin)
+        // Instead: use isAdmin from context
+        if (isAdmin) {
           console.log('User is admin, redirecting to dashboard...');
           router.push("/admin");
         } else {
