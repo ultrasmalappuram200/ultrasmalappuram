@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-const images = ["/images/img2.webp", "/images/tifo.webp","/images/bg1.jpeg"];
+const images = ["/images/img2.webp", "/images/tifo.webp", "/images/bg1.jpeg"];
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
@@ -25,7 +25,7 @@ const Hero = () => {
         setCurrent((prev) => (prev + 1) % images.length);
         setNext((prev) => (prev + 1) % images.length);
         setFade(true);
-      }, 1000); 
+      }, 1000);
     }, 6000);
 
     return () => clearInterval(interval);
