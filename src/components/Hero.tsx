@@ -92,7 +92,7 @@ const Hero = () => {
               className="lg:col-span-7 space-y-6 lg:space-y-8"
             >
               <div className="px-4 py-2 sm:px-6 sm:py-3 bg-[#dd3913] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider transform -skew-x-12 shadow-lg inline-block">
-                Official Supporters of Malappuram FC
+                Official Supporters of Malappuram FCsss
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-tight">
