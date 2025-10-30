@@ -58,7 +58,7 @@ const Sponsors = () => {
           >
             <FaHandshake className="text-[#dd3913] text-3xl drop-shadow-[0_0_15px_rgba(221,57,19,0.8)]" />
             <span className="text-[#dd3913] text-base font-semibold uppercase tracking-[0.25em] font-[Montserrat]">
-              Our Partners
+              Our Partnersa
             </span>
             <FaHandshake className="text-[#dd3913] text-3xl drop-shadow-[0_0_15px_rgba(221,57,19,0.8)]" />
           </motion.div>
