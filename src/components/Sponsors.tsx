@@ -13,22 +13,22 @@ const sponsors = [
 
 const Sponsors = () => {
   return (
-    <section className="relative py-28 px-6 sm:px-10 lg:px-16 bg-gradient-to-b from-[#1a1f3c] via-[#1a1f3c]/95 to-[#0f1329] overflow-hidden">
-      {/* ✨ Animated Background Grid */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <section className="relative py-28 px-6 sm:px-10 lg:px-16 bg-[] overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[#1a1f3c]"></div>
         {[...Array(25)].map((_, i) => (
-          <motion.div
+          <motion.span
             key={i}
-            className="absolute rounded-full bg-[#dd3913]/10 blur-[2px]"
+            className="absolute bg-[#dd3913]/20 rounded-full blur-[2px]"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 6 + 3}px`,
-              height: `${Math.random() * 6 + 3}px`,
+              width: `${Math.random() * 6 + 4}px`,
+              height: `${Math.random() * 6 + 4}px`,
             }}
             animate={{
-              y: [0, -10, 0],
-              opacity: [0.4, 1, 0.4],
+              y: [0, -15, 0],
+              opacity: [0.3, 1, 0.3],
             }}
             transition={{
               duration: 4 + Math.random() * 3,
@@ -39,14 +39,15 @@ const Sponsors = () => {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Header Section */}
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto text-center">
+        {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="mb-20"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -78,45 +79,37 @@ const Sponsors = () => {
           </p>
         </motion.div>
 
-        {/* Sponsor Cards */}
+        {/* Sponsor Grid */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 lg:gap-14"
         >
           {sponsors.map((sponsor, i) => (
             <motion.div
               key={sponsor.name}
-              whileHover={{ scale: 1.08 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              whileHover={{ scale: 1.08, rotate: [0, 1, -1, 0] }}
+              transition={{ duration: 0.4 }}
               className="relative group"
             >
-              {/* Glowing Border */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#dd3913]/30 via-transparent to-[#dd3913]/10 opacity-0 group-hover:opacity-100 blur-md transition-all duration-500"></div>
+              {/* Neon Frame */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#dd3913]/50 via-[#ff6530]/30 to-transparent opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500"></div>
 
               {/* Card */}
-              <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl border border-white/15 rounded-3xl p-10 shadow-[0_0_30px_rgba(0,0,0,0.2)] flex flex-col items-center justify-center h-[260px] overflow-hidden transition-all duration-500 group-hover:shadow-[0_0_40px_rgba(221,57,19,0.3)]">
-                <motion.div
-                  className="w-32 h-32 mb-8 rounded-2xl overflow-hidden bg-white/10 p-4 group-hover:bg-white/20 transition-all duration-500 flex items-center justify-center"
-                  whileHover={{ rotate: [0, 1, -1, 0], transition: { duration: 0.4 } }}
-                >
+              <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center shadow-[0_0_25px_rgba(0,0,0,0.4)] h-[220px] transition-all duration-500 group-hover:border-[#dd3913]/40 group-hover:shadow-[0_0_40px_rgba(221,57,19,0.3)]">
+                <div className="w-28 h-28 flex items-center justify-center overflow-hidden rounded-2xl bg-white/10 group-hover:bg-white/20 transition-all duration-500">
                   <img
                     src={sponsor.logo}
                     alt={`${sponsor.name} logo`}
                     className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                   />
-                </motion.div>
+                </div>
 
-                <h3 className="text-xl font-semibold text-white font-[Montserrat] text-center tracking-tight">
+                <h3 className="text-lg mt-6 font-semibold text-white font-[Montserrat] text-center">
                   {sponsor.name}
                 </h3>
-
-                <motion.div
-                  className="mt-3 w-14 h-1 bg-gradient-to-r from-[#dd3913] via-[#ff5a2f] to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  initial={false}
-                />
               </div>
             </motion.div>
           ))}
