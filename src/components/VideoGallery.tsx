@@ -5,12 +5,13 @@ import { motion } from "framer-motion";
 import { FaPlay } from "react-icons/fa";
 
 const videoIds = [
-  "CF3stVeql0I",
-  "fpcLLksnkbM",
-  "F0Br6mcFwTg",
+  "4Uagd_dclYo",
+  "zzv79QS9QpU",
+  "yorkfkgp33A",
+  "IawPbfvEf3A",
+  "gHHJh3WS89M",
   "VBa17Lhu-4E",
-  "RNvBzmK5ImU",
-  "oeqv85YP7wU",
+  // "oeqv85YP7wU",
 ];
 
 const VideoItem = ({ id, index }: { id: string; index: number }) => {
