@@ -187,9 +187,13 @@ const LastMalappuramMatch = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-white text-sm sm:text-base">
                   <div className="flex items-center gap-2">
                     <FaCalendar className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="font-semibold">
-                      {new Date(lastMatch.date).toLocaleDateString()}
-                    </span>
+                     <span>
+                          {new Date(lastMatch.date).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
+                        </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <FaMapPin className="w-4 h-4 sm:w-5 sm:h-5" />
