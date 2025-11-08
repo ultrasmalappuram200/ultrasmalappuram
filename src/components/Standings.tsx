@@ -59,6 +59,10 @@ const Standings = () => {
     return 'text-gray-400'
   }
 
+  const highlightTeam = (club: string) => {
+    return club.toLowerCase().includes('malappuram')
+  }
+
   return (
     <section className="py-20 px-4 sm:px-8 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c] relative overflow-hidden">
       {/* Animated grid background */}
@@ -113,7 +117,7 @@ const Standings = () => {
           </p>
         </motion.div>
 
-        {/* TABLE (for tablets and desktops) */}
+        {/* TABLE for larger screens */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -143,7 +147,9 @@ const Standings = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-all duration-300 group"
+                    className={`border-b border-gray-700/30 hover:bg-gray-800/30 transition-all duration-300 group ${
+                      highlightTeam(team.club) ? 'bg-[#dd3913]/10' : ''
+                    }`}
                   >
                     <td className="py-4 px-3 text-lg font-bold text-center sm:text-left">
                       <span className={`${getPositionColor(index + 1)} font-[Montserrat]`}>
@@ -167,18 +173,15 @@ const Standings = () => {
                           </div>
                         )}
                         <div>
-                          <div className="text-base font-bold text-white group-hover:text-[#dd3913] transition-colors font-[Montserrat]">
+                          <div
+                            className={`text-base font-bold transition-colors font-[Montserrat] ${
+                              highlightTeam(team.club)
+                                ? 'text-[#dd3913]'
+                                : 'text-white group-hover:text-[#dd3913]'
+                            }`}
+                          >
                             {team.club}
                           </div>
-                          {index < 3 && (
-                            <div className="text-[10px] text-gray-400 uppercase tracking-wider font-[Montserrat]">
-                              {index === 0
-                                ? 'Champion'
-                                : index === 1
-                                ? 'Runner-up'
-                                : 'Third Place'}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </td>
@@ -202,7 +205,7 @@ const Standings = () => {
           </div>
         </motion.div>
 
-        {/* MOBILE CARD LAYOUT */}
+        {/* MOBILE CARD VIEW */}
         <div className="block sm:hidden space-y-4">
           {teams.map((team, index) => (
             <motion.div
@@ -211,7 +214,9 @@ const Standings = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-b from-gray-800/60 to-gray-900/60 border border-gray-700/40 rounded-2xl p-4 flex items-center justify-between"
+              className={`bg-gradient-to-b from-gray-800/60 to-gray-900/60 border border-gray-700/40 rounded-2xl p-4 flex items-center justify-between ${
+                highlightTeam(team.club) ? 'border-[#dd3913]/70 bg-[#dd3913]/10' : ''
+              }`}
             >
               <div className="flex items-center gap-3">
                 <div className="text-xl font-bold">
@@ -231,12 +236,13 @@ const Standings = () => {
                   </div>
                 )}
                 <div>
-                  <div className="text-white font-bold text-base font-[Montserrat]">{team.club}</div>
-                  {index < 3 && (
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wider font-[Montserrat]">
-                      {index === 0 ? 'Champion' : index === 1 ? 'Runner-up' : 'Third Place'}
-                    </div>
-                  )}
+                  <div
+                    className={`font-bold text-base font-[Montserrat] ${
+                      highlightTeam(team.club) ? 'text-[#dd3913]' : 'text-white'
+                    }`}
+                  >
+                    {team.club}
+                  </div>
                 </div>
               </div>
               <div className="text-right font-[Montserrat]">

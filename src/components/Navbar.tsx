@@ -122,7 +122,7 @@ const Navbar = () => {
 
           {/* Join Us Button */}
           <div className="hidden sm:block">
-            <Link href="https://chat.whatsapp.com/BUrboLPViNw8VBLvI0AoBy?mode=wwt" target="_blank">
+            <Link href="https://chat.whatsapp.com/DzyEc6Bq9FfJNo6kqpsmAw?mode=wwt" target="_blank">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

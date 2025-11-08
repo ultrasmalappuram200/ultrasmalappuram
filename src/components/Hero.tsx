@@ -78,7 +78,7 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <Link href="https://chat.whatsapp.com/BUrboLPViNw8VBLvI0AoBy?mode=wwt">
+              <Link href="https://chat.whatsapp.com/DzyEc6Bq9FfJNo6kqpsmAw?mode=wwt">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}

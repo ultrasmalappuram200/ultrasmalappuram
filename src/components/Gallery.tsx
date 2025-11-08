@@ -12,6 +12,7 @@ const images = [
   { src: "/images/Gallery/Gal6.jpeg" },
   { src: "/images/Gallery/Gal1.jpeg" },
   { src: "/images/Gallery/Gal4.jpeg" },
+  { src: "/images/Gallery/img2.webp" },
 ];
 
 const Gallery = () => {
@@ -22,7 +23,7 @@ const Gallery = () => {
       id="Gallery"
       className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c] overflow-hidden"
     >
-      {/* Background lines */}
+      {/* Animated background lines (unchanged) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(6)].map((_, i) => (
           <motion.div
@@ -45,8 +46,9 @@ const Gallery = () => {
         ))}
       </div>
 
+      {/* CONTENT */}
       <div className="relative z-10 max-w-7xl mx-auto text-center">
-        {/* Section Heading */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -68,68 +70,39 @@ const Gallery = () => {
           </h2>
         </motion.div>
 
-        {/* Responsive Bento Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Large Feature Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            onClick={() => setSelected(images[0].src)}
-            className="group md:col-span-2 lg:col-span-2 relative rounded-2xl overflow-hidden cursor-pointer border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-300"
-          >
-            <img
-              src={images[0].src}
-              alt=""
-              className="w-full h-64 sm:h-80 lg:h-96 object-cover transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
-          </motion.div>
-
-          {/* Medium Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-            onClick={() => setSelected(images[1].src)}
-            className="group relative rounded-2xl overflow-hidden cursor-pointer border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-300"
-          >
-            <img
-              src={images[1].src}
-              alt=""
-              className="w-full h-64 sm:h-80 lg:h-96 object-cover transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
-          </motion.div>
-
-          {/* Small Images */}
-          {images.slice(2).map((image, i) => (
+        {/* ✅ Improved Grid Layout */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4 sm:space-y-6">
+          {images.map((image, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
               viewport={{ once: true }}
               onClick={() => setSelected(image.src)}
-              className="group relative rounded-2xl overflow-hidden cursor-pointer border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-300"
+              className="relative overflow-hidden rounded-2xl cursor-pointer border border-white/10 shadow-lg hover:shadow-2xl transition-all duration-500 group"
             >
               <img
                 src={image.src}
                 alt=""
-                className="w-full h-48 sm:h-64 md:h-72 lg:h-80 object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110"
+                style={{
+                  height: i % 3 === 0 ? "420px" : i % 2 === 0 ? "340px" : "480px",
+                }}
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
+              {/* <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <span className="text-white font-semibold text-sm bg-[#dd3913]/80 px-4 py-2 rounded-full backdrop-blur-md">
+                  View Image
+                </span>
+              </div> */}
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Lightbox */}
+      {/* ✅ Lightbox with subtle glow and zoom */}
       <AnimatePresence>
         {selected && (
           <motion.div
@@ -141,12 +114,12 @@ const Gallery = () => {
           >
             <motion.img
               src={selected}
-              alt=""
+              alt="Selected"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="max-w-full max-h-[90vh] object-contain rounded-2xl border-4 border-[#dd3913]/40 shadow-2xl"
+              className="max-w-full max-h-[90vh] object-contain rounded-2xl border-4 border-[#dd3913]/40 shadow-[0_0_40px_#dd391350]"
             />
             <motion.button
               whileHover={{ scale: 1.1 }}
