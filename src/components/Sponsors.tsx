@@ -9,6 +9,7 @@ const sponsors = [
   { name: "EdRoot", logo: "/images/sponsors/edRoot.png" },
   { name: "Kalliyath", logo: "/images/sponsors/Kalliyath.png" },
   { name: "Roadmate", logo: "/images/sponsors/Roadmate.png" },
+  { name: "Chicking", logo: "/images/sponsors/chicking.png" },
 ];
 
 const Sponsors = () => {
@@ -85,7 +86,7 @@ const Sponsors = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 lg:gap-14"
+          className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-14"
         >
           {sponsors.map((sponsor, i) => (
             <motion.div
