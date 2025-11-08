@@ -290,107 +290,105 @@ const LastMalappuramMatch = () => {
         </motion.div>
 
         {/* ⚽ Fixtures */}
+{/* ⚽ Upcoming Fixtures (Full-Width Layout) */}
+<motion.div
+  initial={{ opacity: 0, y: 50 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, delay: 0.2 }}
+  viewport={{ once: true }}
+  className="relative"
+>
+  <div className="flex items-center gap-3 mb-6 sm:mb-8 justify-center sm:justify-start">
+    <FaFutbol className="w-6 h-6 sm:w-8 sm:h-8 text-[#dd3913]" />
+    <h3 className="text-2xl sm:text-3xl font-bold text-white font-[Montserrat]">
+      Upcoming Fixtures
+    </h3>
+  </div>
+
+  {fixtures.length ? (
+    <div className="flex flex-col gap-6">
+      {fixtures.map((fixture, i) => (
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          key={fixture.id}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ delay: i * 0.1 }}
           viewport={{ once: true }}
-          className="relative"
+          whileHover={{ scale: 1.02 }}
+          className="w-full bg-gradient-to-br from-gray-800/30 to-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-lg overflow-hidden"
         >
-          <div className="flex items-center gap-3 mb-6 sm:mb-8 flex-wrap justify-center sm:justify-start">
-            <FaFutbol className="w-6 h-6 sm:w-8 sm:h-8 text-[#dd3913]" />
-            <h3 className="text-2xl sm:text-3xl font-bold text-white font-[Montserrat]">
-              Upcoming Fixtures
-            </h3>
+          <div className="bg-gradient-to-r from-[#dd3913] to-[#dd3913]/80 px-4 py-3">
+            <div className="flex items-center justify-between text-white text-sm">
+              <div className="flex items-center gap-2">
+                <FaCalendar className="w-4 h-4" />
+                <span>
+                  {new Date(fixture.date).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <span>7:30 PM</span>
+            </div>
           </div>
 
-          {fixtures.length ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {fixtures.map((fixture, i) => (
-                <motion.div
-                  key={fixture.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-gradient-to-br from-gray-800/30 to-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden"
-                >
-                  <div className="bg-gradient-to-r from-[#dd3913] to-[#dd3913]/80 px-4 py-2 sm:py-3">
-                    <div className="flex items-center justify-between text-white text-xs sm:text-sm">
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <FaCalendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span>
-                          {new Date(fixture.date).toLocaleDateString("en-IN", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      {/* <span>{new Date(fixture.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span> */}
-                      <span>7:30 PM</span>
-                    </div>
-                  </div>
-
-                  <div className="p-5 sm:p-6">
-                    <div className="flex items-center justify-between mb-4 sm:mb-6 text-center">
-                      <div className="flex flex-col items-center flex-1">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-full border border-[#dd3913]/50 flex items-center justify-center mb-2 overflow-hidden">
-                          {getTeamLogo(fixture.home_team) ? (
-                            <img
-                              src={getTeamLogo(fixture.home_team)}
-                              alt={fixture.home_team}
-                              className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full"
-                            />
-                          ) : (
-                            <FaFutbol className="text-[#dd3913] w-4 h-4 sm:w-5 sm:h-5" />
-                          )}
-                        </div>
-                        <p className="text-xs sm:text-sm text-white font-semibold">
-                          {fixture.home_team}
-                        </p>
-                      </div>
-
-                      <span className="text-[#dd3913] font-bold text-base sm:text-lg mx-3 sm:mx-4">
-                        VS
-                      </span>
-
-                      <div className="flex flex-col items-center flex-1">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-full border border-[#dd3913]/50 flex items-center justify-center mb-2 overflow-hidden">
-                          {getTeamLogo(fixture.away_team) ? (
-                            <img
-                              src={getTeamLogo(fixture.away_team)}
-                              alt={fixture.away_team}
-                              className="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded-full"
-                            />
-                          ) : (
-                            <FaFutbol className="text-[#dd3913] w-4 h-4 sm:w-5 sm:h-5" />
-                          )}
-                        </div>
-                        <p className="text-xs sm:text-sm text-white font-semibold">
-                          {fixture.away_team}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-center gap-2 text-gray-400 text-xs sm:text-sm bg-gray-800/30 rounded-lg p-2 sm:p-3">
-                      <FaMapPin className="text-[#dd3913] w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="truncate">{fixture.venue}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 sm:py-16 bg-gray-800/30 rounded-2xl border border-gray-700/50">
-              <FaCalendar className="w-10 h-10 sm:w-16 sm:h-16 text-[#dd3913]/50 mx-auto mb-4" />
-              <p className="text-gray-400 text-sm sm:text-lg">
-                No upcoming fixtures scheduled.
+          <div className="p-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-6">
+            {/* Home Team */}
+            <div className="flex items-center gap-4 flex-1 justify-center sm:justify-start">
+              <div className="w-16 h-16 bg-gray-700 rounded-full border-2 border-[#dd3913]/50 flex items-center justify-center overflow-hidden">
+                {getTeamLogo(fixture.home_team) ? (
+                  <img
+                    src={getTeamLogo(fixture.home_team)}
+                    alt={fixture.home_team}
+                    className="w-12 h-12 object-cover rounded-full"
+                  />
+                ) : (
+                  <FaFutbol className="text-[#dd3913] w-6 h-6" />
+                )}
+              </div>
+              <p className="text-white font-semibold text-lg sm:text-xl">
+                {fixture.home_team}
               </p>
             </div>
-          )}
+
+            {/* VS */}
+            <div className="text-[#dd3913] font-extrabold text-3xl">VS</div>
+
+            {/* Away Team */}
+            <div className="flex items-center gap-4 flex-1 justify-center sm:justify-end">
+              <p className="text-white font-semibold text-lg sm:text-xl">
+                {fixture.away_team}
+              </p>
+              <div className="w-16 h-16 bg-gray-700 rounded-full border-2 border-[#dd3913]/50 flex items-center justify-center overflow-hidden">
+                {getTeamLogo(fixture.away_team) ? (
+                  <img
+                    src={getTeamLogo(fixture.away_team)}
+                    alt={fixture.away_team}
+                    className="w-12 h-12 object-cover rounded-full"
+                  />
+                ) : (
+                  <FaFutbol className="text-[#dd3913] w-6 h-6" />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800/40 text-gray-300 text-sm py-3 px-4 flex items-center justify-center gap-2">
+            <FaMapPin className="text-[#dd3913]" />
+            <span>{fixture.venue}</span>
+          </div>
         </motion.div>
+      ))}
+    </div>
+  ) : (
+    <div className="text-center py-12 bg-gray-800/30 rounded-2xl border border-gray-700/50">
+      <FaCalendar className="w-10 h-10 text-[#dd3913]/50 mx-auto mb-4" />
+      <p className="text-gray-400 text-lg">No upcoming fixtures scheduled.</p>
+    </div>
+  )}
+</motion.div>
+
       </div>
     </section>
   );
