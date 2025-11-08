@@ -23,7 +23,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "Ultras Malappuram - Official Website",
-  description: "Official website of Malappuram FC football club",
+  description: "Official website for Malappuram FC football club fans.",
 };
 
 export default function RootLayout({
