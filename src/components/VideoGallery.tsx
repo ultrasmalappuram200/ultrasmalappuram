@@ -5,12 +5,13 @@ import { motion } from "framer-motion";
 import { FaPlay } from "react-icons/fa";
 
 const videoIds = [
-  "4Uagd_dclYo",
+  "E_2Fjuy2nzE",
   "zzv79QS9QpU",
   "yorkfkgp33A",
   "IawPbfvEf3A",
   "gHHJh3WS89M",
-  "VBa17Lhu-4E",
+  "4Uagd_dclYo",
+  // "VBa17Lhu-4E",
   // "oeqv85YP7wU",
 ];
 
