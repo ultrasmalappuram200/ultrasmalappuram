@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import { FaHandshake } from "react-icons/fa";
 
 const sponsors = [
-  { name: "Ajmi", logo: "/images/sponsors/Ajmi.png" },
-  { name: "EdRoot", logo: "/images/sponsors/edRoot.png" },
-  { name: "Kalliyath", logo: "/images/sponsors/Kalliyath.png" },
-  { name: "Roadmate", logo: "/images/sponsors/Roadmate.png" },
   { name: "Chicking", logo: "/images/sponsors/chicking.png" },
+  { name: "Roadmate", logo: "/images/sponsors/Roadmate.png" },
+  { name: "Ajmi", logo: "/images/sponsors/Ajmi.png" },
+  { name: "Kalliyath", logo: "/images/sponsors/Kalliyath.png" },
+  { name: "EdRoot", logo: "/images/sponsors/edRoot.png" },
 ];
 
 const Sponsors = () => {
