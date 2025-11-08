@@ -8,6 +8,7 @@ import {
   FaTrophy,
   FaClock,
   FaFutbol,
+  FaTicketAlt,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -335,7 +336,7 @@ const LastMalappuramMatch = () => {
 
                   <div className="p-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-6">
                     {/* Home Team */}
-                    <div className="flex items-center gap-4 flex-1 justify-center sm:justify-start">
+                    <div className="flex flex-col items-center gap-4 flex-1 justify-center sm:justify-start">
                       <div className="w-16 h-16 bg-gray-700 rounded-full border-2 border-[#dd3913]/50 flex items-center justify-center overflow-hidden">
                         {getTeamLogo(fixture.home_team) ? (
                           <img
@@ -358,7 +359,7 @@ const LastMalappuramMatch = () => {
                     </div>
 
                     {/* Away Team */}
-                    <div className="flex items-center gap-4 flex-1 justify-center sm:justify-end">
+                    <div className="flex flex-col-reverse items-center gap-4 flex-1 justify-center sm:justify-end">
                       <p className="text-white font-semibold text-lg sm:text-xl">
                         {fixture.away_team}
                       </p>
@@ -376,9 +377,23 @@ const LastMalappuramMatch = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gray-800/40 text-gray-300 text-sm py-3 px-4 flex items-center justify-center gap-2">
-                    <FaMapPin className="text-[#dd3913]" />
-                    <span>{fixture.venue}</span>
+                  {/* Venue */}
+                  <div className="bg-gray-800/40 text-gray-300 text-sm py-3 px-4 flex flex-col items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <FaMapPin className="text-[#dd3913]" />
+                      <span>{fixture.venue}</span>
+                    </div>
+
+                    {/* Book Ticket Button */}
+                    <motion.a
+                      href="#"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="mt-3 inline-flex items-center gap-2 bg-[#dd3913] text-white font-semibold px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      <FaTicketAlt className="w-4 h-4" />
+                      Book Ticket
+                    </motion.a>
                   </div>
                 </motion.div>
               ))}
