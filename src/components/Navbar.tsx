@@ -54,7 +54,7 @@ const Navbar = () => {
     { name: "Standings", href: "standings" },
     { name: "Matches", href: "matches" },
     { name: "Gallery", href: "gallery" },
-    { name: "Contact", href: "contact" },
+    // { name: "Contact", href: "contact" },
   ];
 
   return (

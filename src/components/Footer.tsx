@@ -116,7 +116,7 @@ const Footer = () => {
                 { name: "Standings", href: "#standings" },
                 { name: "Gallery", href: "#gallery" },
                 { name: "Matches", href: "#matches" },
-                { name: "Contact", href: "#contact" }
+                // { name: "Contact", href: "#contact" }
               ].map((link, i) => (
                 <motion.a
                   key={i}
