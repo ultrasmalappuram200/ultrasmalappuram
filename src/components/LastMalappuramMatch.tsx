@@ -386,7 +386,7 @@ const LastMalappuramMatch = () => {
 
                     {/* Book Ticket Button */}
                     <motion.a
-                      href="https://ticketgenie.in/ticket/Kannur-Warriors-FC-Home-Games/312"
+                      href="https://www.quickerala.com/events/calicut-fc-vs-malappuram-football-club-slk2-m5/80"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="mt-3 inline-flex items-center gap-2 bg-[#dd3913] text-white font-semibold px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
