@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import ProMemberModal from "./ProMemberModal";
 
 const images = ["/images/img2.webp", "/images/tifo.webp", "/images/bg1.jpeg"];
 
 const Hero = () => {
   const [index, setIndex] = useState(0);
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -78,15 +80,14 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <Link href="https://chat.whatsapp.com/DzyEc6Bq9FfJNo6kqpsmAw?mode=wwt">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-base sm:text-lg transition-all duration-200 shadow-lg w-full sm:w-auto border-2 border-[#dd3913]/50 rounded-md"
-                >
-                  JOIN THE ARMY
-                </motion.button>
-              </Link>
+              <motion.button
+                onClick={() => setIsProModalOpen(true)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                className="px-8 py-4 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-base sm:text-lg transition-all duration-200 shadow-lg w-full sm:w-auto border-2 border-[#dd3913]/50 rounded-md"
+              >
+                BECOME PRO MEMBER IN MALAPPURAM
+              </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -124,6 +125,12 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Pro Member Modal */}
+      <ProMemberModal 
+        isOpen={isProModalOpen} 
+        onClose={() => setIsProModalOpen(false)} 
+      />
     </section>
   );
 };
