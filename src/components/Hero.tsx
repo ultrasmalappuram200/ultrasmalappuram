@@ -84,9 +84,9 @@ const Hero = () => {
                 onClick={() => setIsProModalOpen(true)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-8 py-4 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-base sm:text-lg transition-all duration-200 shadow-lg w-full sm:w-auto border-2 border-[#dd3913]/50 rounded-md"
+                className="px-4 sm:px-8 py-4 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-xs sm:text-base lg:text-lg transition-all duration-200 shadow-lg w-full sm:w-auto border-2 border-[#dd3913]/50 rounded-md whitespace-nowrap"
               >
-                BECOME PRO MEMBER IN MALAPPURAM
+                BECOME PRO MEMBER - ULTRAS MALAPPURAM
               </motion.button>
 
               <motion.button
