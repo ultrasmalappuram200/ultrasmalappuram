@@ -68,24 +68,19 @@ const VideoGallery = () => (
     id="VideoGallery"
     className="relative py-16 sm:py-24 min-h-screen w-full px-4 sm:px-6 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#0f132b]"
   >
-    {/* Decorative geometric lines and shapes */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(4)].map((_, i) => (
-        <motion.div
+    {/* CSS-only decorative lines */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      {[0,1,2,3].map((i) => (
+        <div
           key={i}
-          className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent"
+          className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent origin-left"
           style={{
             width: `${250 + i * 50}px`,
             left: `${25 + i * 20}%`,
             top: `${20 + i * 25}%`,
-            transform: `rotate(${-20 + i * 15}deg)`,
-          }}
-          initial={{ opacity: 0, scaleX: 0 }}
-          animate={{ opacity: [0, 0.4, 0], scaleX: [0, 1, 0] }}
-          transition={{
-            duration: 4 + i,
-            repeat: Infinity,
-            delay: i,
+            transform: `rotate(${-20 + i * 15}deg) scaleX(0)`,
+            animation: `decoSweep ${4 + i}s ease-in-out infinite`,
+            animationDelay: `${i}s`,
           }}
         />
       ))}

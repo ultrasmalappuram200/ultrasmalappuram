@@ -25,7 +25,7 @@ const Hero = () => {
         flex items-center
       "
     >
-      {/* 🔸 Smooth background slideshow with AnimatePresence */}
+      {/* Smooth background slideshow */}
       <div className="absolute inset-0">
         <AnimatePresence>
           <motion.img
@@ -33,6 +33,7 @@ const Hero = () => {
             src={images[index]}
             alt="Hero Background"
             className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ willChange: "opacity, transform" }}
             initial={{ opacity: 0, scale: 1.08 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.04 }}
@@ -40,11 +41,13 @@ const Hero = () => {
               duration: 1.5,
               ease: "easeInOut",
             }}
+            fetchPriority={index === 0 ? "high" : "auto"}
+            decoding="async"
           />
         </AnimatePresence>
 
         {/* Soft overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f3c]/85 via-[#1a1f3c]/75 to-[#1a1f3c]/90 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f3c]/85 via-[#1a1f3c]/75 to-[#1a1f3c]/90 pointer-events-none" />
       </div>
 
       {/* 🔸 Content */}

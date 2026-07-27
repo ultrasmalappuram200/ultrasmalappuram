@@ -7,59 +7,32 @@ import { FaInstagram, FaYoutube, FaTwitter, FaFacebookF } from "react-icons/fa";
 const Footer = () => {
   return (
     <footer className="relative bg-[#1a1f3c] text-white overflow-hidden">
-      {/* Sharp Geometric Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Sharp Diagonal Lines */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
+      {/* CSS-only ambient background — no JS animation loops */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(221, 57, 19, 1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(221, 57, 19, 1) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        {/* 3 subtle static decorative lines */}
+        {[0,1,2].map((i) => (
+          <div
             key={i}
-            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/30 to-transparent"
+            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/25 to-transparent origin-left"
             style={{
-              width: `${300 + i * 50}px`,
-              left: `${(i * 15 + 10) % 100}%`,
-              top: `${(i * 18 + 20) % 100}%`,
-              transform: `rotate(${i * 7 - 21}deg)`,
-            }}
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ 
-              opacity: [0, 0.4, 0], 
-              scaleX: [0, 1, 0] 
-            }}
-            transition={{
-              duration: 4 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.5,
+              width: `${320 + i * 60}px`,
+              left: `${10 + i * 25}%`,
+              top: `${20 + i * 30}%`,
+              transform: `rotate(${i * 8 - 8}deg) scaleX(0)`,
+              animation: `decoSweep ${5 + i}s ease-in-out infinite`,
+              animationDelay: `${i * 1.2}s`,
             }}
           />
-        ))}
-
-        {/* Sharp Geometric Shapes */}
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              left: `${(i * 12 + 5) % 100}%`,
-              top: `${(i * 11 + 15) % 100}%`,
-            }}
-            initial={{ opacity: 0, rotate: 0 }}
-            animate={{ 
-              opacity: [0, 0.2, 0],
-              rotate: 180 
-            }}
-            transition={{
-              duration: 20 + i * 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          >
-            <div 
-              className={`bg-[#dd3913]/15 ${i % 2 === 0 ? 'w-4 h-4' : 'w-3 h-8'}`}
-              style={{
-                clipPath: i % 2 === 0 ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : 'polygon(0% 0%, 100% 0%, 50% 100%)'
-              }}
-            />
-          </motion.div>
         ))}
       </div>
 

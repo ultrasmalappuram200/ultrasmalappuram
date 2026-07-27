@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1a1f3c;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -12,17 +12,91 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  /* Prevent layout shifts & improve compositing */
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* GPU-composited layer for fixed/sticky elements */
+nav,
+.fixed {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Line-pulse animation used in page.tsx background */
+@keyframes linePulse {
+  0%, 100% { opacity: 0; transform: scaleX(0); }
+  50% { opacity: 0.6; transform: scaleX(1); }
+}
+
+/* Decorative diagonal sweep — shared across section backgrounds */
+@keyframes decoSweep {
+  0%, 100% { opacity: 0; transform: scaleX(0); }
+  50%       { opacity: 0.4; transform: scaleX(1); }
+}
+
+/* Particle float — used in Sponsors section */
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50%       { transform: translateY(-15px); opacity: 1; }
+}
+
+/* Orb float animations — used in About section */
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0,0); opacity: 0.2; }
+  50%       { transform: translate(50px,40px); opacity: 0.4; }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0,0); opacity: 0.15; }
+  50%       { transform: translate(-50px,-30px); opacity: 0.35; }
+}
+
+/* Static decorative lines — CSS-only, zero JS runtime */
+.deco-line {
+  will-change: opacity, transform;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thin custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f132b;
+}
+::-webkit-scrollbar-thumb {
+  background: #dd3913;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5a2f;
 }
 
 /* Custom date picker styling */

@@ -17,12 +17,11 @@ const BackToTop = dynamic(() => import("@/components/BackToTop"), { ssr: false }
 
 const Home = () => {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c]">
-      {/* Optimized Sharp Geometric Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        
-        {/* Optimized CSS-only grid background (Replaces 300 DOM nodes!) */}
-        <div 
+    <div className="relative min-h-screen bg-[#1a1f3c]">
+      {/* Optimized CSS-only background — zero JS animation cost */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+        {/* CSS grid pattern */}
+        <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `
@@ -33,18 +32,18 @@ const Home = () => {
           }}
         />
 
-        {/* Lightweight Shape Animations (Reduced DOM count) */}
-        {[...Array(3)].map((_, i) => (
+        {/* 2 lightweight CSS-animated decorative lines */}
+        {[0, 1].map((i) => (
           <div
             key={`line-${i}`}
-            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent"
+            className="deco-line absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent will-change-transform"
             style={{
-              width: `${400 + i * 200}px`,
-              left: `${10 + i * 30}%`,
-              top: `${20 + i * 30}%`,
-              transform: `rotate(${-20 + i * 8}deg)`,
-              animation: `linePulse ${6 + i * 2}s infinite`,
-              animationDelay: `${i * 1.5}s`
+              width: `${500 + i * 200}px`,
+              left: `${15 + i * 35}%`,
+              top: `${25 + i * 30}%`,
+              transform: `rotate(${-18 + i * 10}deg)`,
+              animation: `linePulse ${7 + i * 2}s ease-in-out infinite`,
+              animationDelay: `${i * 2}s`,
             }}
           />
         ))}
@@ -75,13 +74,6 @@ const Home = () => {
         </div>
         <BackToTop />
       </div>
-
-      <style jsx>{`
-        @keyframes linePulse {
-          0%, 100% { opacity: 0; transform: scaleX(0); }
-          50% { opacity: 0.6; transform: scaleX(1); }
-        }
-      `}</style>
     </div>
   );
 };

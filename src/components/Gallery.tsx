@@ -23,24 +23,19 @@ const Gallery = () => {
       id="Gallery"
       className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c] overflow-hidden"
     >
-      {/* Animated background lines (unchanged) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
+      {/* CSS-only decorative lines — zero JS runtime cost */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {[0,1,2,3,4,5].map((i) => (
+          <div
             key={i}
-            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent"
+            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent origin-left"
             style={{
               width: `${300 + i * 50}px`,
               top: `${10 + i * 15}%`,
               left: `${5 + i * 10}%`,
-              transform: `rotate(${-15 + i * 8}deg)`,
-            }}
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: [0, 0.4, 0], scaleX: [0, 1, 0] }}
-            transition={{
-              duration: 5 + i,
-              repeat: Infinity,
-              delay: i,
+              transform: `rotate(${-15 + i * 8}deg) scaleX(0)`,
+              animation: `decoSweep ${5 + i}s ease-in-out infinite`,
+              animationDelay: `${i}s`,
             }}
           />
         ))}

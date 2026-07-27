@@ -131,21 +131,20 @@ const LastMalappuramMatch = () => {
 
   return (
     <section className="relative py-20 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c] overflow-hidden">
-      {/* Background Animation */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(4)].map((_, i) => (
-          <motion.div
+      {/* CSS-only decorative lines */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {[0,1,2,3].map((i) => (
+          <div
             key={i}
-            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent"
+            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent origin-left"
             style={{
               width: `${300 + i * 50}px`,
               left: `${25 + i * 20}%`,
               top: `${20 + i * 25}%`,
-              transform: `rotate(${-25 + i * 12}deg)`,
+              transform: `rotate(${-25 + i * 12}deg) scaleX(0)`,
+              animation: `decoSweep ${5 + i}s ease-in-out infinite`,
+              animationDelay: `${i}s`,
             }}
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: [0, 0.4, 0], scaleX: [0, 1, 0] }}
-            transition={{ duration: 5 + i, repeat: Infinity, delay: i }}
           />
         ))}
       </div>

@@ -10,17 +10,15 @@ const About = () => {
       id="about"
       className="relative min-h-screen flex items-center justify-center px-6 py-24 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#0f132b] overflow-hidden"
     >
-      {/* 🌌 Animated Background Orbs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
+      {/* CSS-only animated background orbs — composited on GPU, no JS */}
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div
           className="absolute w-[400px] h-[400px] bg-[#dd3913]/20 blur-[160px] rounded-full top-1/3 left-10"
-          animate={{ x: [0, 50, -50, 0], y: [0, 40, -40, 0], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          style={{ animation: "orbFloat1 10s ease-in-out infinite", willChange: "transform, opacity" }}
         />
-        <motion.div
+        <div
           className="absolute w-[500px] h-[500px] bg-[#dd3913]/10 blur-[200px] rounded-full bottom-10 right-10"
-          animate={{ x: [0, -50, 50, 0], y: [0, -30, 30, 0], opacity: [0.15, 0.35, 0.15] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          style={{ animation: "orbFloat2 12s ease-in-out infinite", willChange: "transform, opacity" }}
         />
       </div>
 

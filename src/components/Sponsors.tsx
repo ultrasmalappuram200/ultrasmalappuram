@@ -12,29 +12,31 @@ const sponsors = [
   { name: "EdRoot", logo: "/images/sponsors/edRoot.png" },
 ];
 
+// Pre-computed positions — no Math.random() at render time
+const PARTICLES = [
+  { top: "12%", left: "8%",  size: 6,  dur: 5.2 },
+  { top: "35%", left: "22%", size: 4,  dur: 6.1 },
+  { top: "58%", left: "45%", size: 7,  dur: 4.8 },
+  { top: "78%", left: "68%", size: 5,  dur: 5.7 },
+  { top: "22%", left: "85%", size: 6,  dur: 6.4 },
+];
+
 const Sponsors = () => {
   return (
-    <section className="relative py-28 px-6 sm:px-10 lg:px-16 bg-[] overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[#1a1f3c]"></div>
-        {[...Array(25)].map((_, i) => (
-          <motion.span
+    <section className="relative py-28 px-6 sm:px-10 lg:px-16 bg-[#1a1f3c] overflow-hidden">
+      {/* CSS-only ambient background — zero JS animation cost */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        {PARTICLES.map((p, i) => (
+          <span
             key={i}
-            className="absolute bg-[#dd3913]/20 rounded-full blur-[2px]"
+            className="absolute rounded-full bg-[#dd3913]/25 blur-[2px]"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 6 + 4}px`,
-              height: `${Math.random() * 6 + 4}px`,
-            }}
-            animate={{
-              y: [0, -15, 0],
-              opacity: [0.3, 1, 0.3],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 3,
-              repeat: Infinity,
-              delay: Math.random() * 2,
+              top: p.top,
+              left: p.left,
+              width: p.size,
+              height: p.size,
+              animation: `particleFloat ${p.dur}s ease-in-out infinite`,
+              animationDelay: `${i * 0.6}s`,
             }}
           />
         ))}
@@ -91,12 +93,12 @@ const Sponsors = () => {
           {sponsors.map((sponsor, i) => (
             <motion.div
               key={sponsor.name}
-              whileHover={{ scale: 1.08, rotate: [0, 1, -1, 0] }}
-              transition={{ duration: 0.4 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
               className="relative group"
             >
               {/* Neon Frame */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#dd3913]/50 via-[#ff6530]/30 to-transparent opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500"></div>
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#dd3913]/50 via-[#ff6530]/30 to-transparent opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
 
               {/* Card */}
               <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center shadow-[0_0_25px_rgba(0,0,0,0.4)] h-[220px] transition-all duration-500 group-hover:border-[#dd3913]/40 group-hover:shadow-[0_0_40px_rgba(221,57,19,0.3)]">
@@ -105,6 +107,8 @@ const Sponsors = () => {
                     src={sponsor.logo}
                     alt={`${sponsor.name} logo`}
                     className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
 
