@@ -120,4 +120,4 @@ const Sponsors = () => {
   );
 };
 
-export default Sponsors;
+export default React.memo(Sponsors);

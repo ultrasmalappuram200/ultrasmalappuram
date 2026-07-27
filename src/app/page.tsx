@@ -1,70 +1,53 @@
 'use client'
 
 import React from "react";
+import dynamic from "next/dynamic";
 import Hero from "@/components/Hero";
-import Gallery from "@/components/Gallery";
-import About from "@/components/About";
-import VideoGallery from "@/components/VideoGallery";
-import Footer from "@/components/Footer";
-import Standings from "@/components/Standings";
-import LastMalappuramMatch from "@/components/LastMalappuramMatch";
-import Sponsors from "@/components/Sponsors";
 import Navbar from "@/components/Navbar";
-import BackToTop from "@/components/BackToTop";
+
+// Dynamically import heavy components below the fold
+const About = dynamic(() => import("@/components/About"), { ssr: false });
+const Gallery = dynamic(() => import("@/components/Gallery"), { ssr: false });
+const VideoGallery = dynamic(() => import("@/components/VideoGallery"), { ssr: false });
+const Standings = dynamic(() => import("@/components/Standings"), { ssr: false });
+const LastMalappuramMatch = dynamic(() => import("@/components/LastMalappuramMatch"), { ssr: false });
+const Sponsors = dynamic(() => import("@/components/Sponsors"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
+const BackToTop = dynamic(() => import("@/components/BackToTop"), { ssr: false });
 
 const Home = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c]">
       {/* Optimized Sharp Geometric Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Optimized Sharp Diagonal Lines */}
-        {[...Array(6)].map((_, i) => (
+        
+        {/* Optimized CSS-only grid background (Replaces 300 DOM nodes!) */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(221, 57, 19, 1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(221, 57, 19, 1) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+          }}
+        />
+
+        {/* Lightweight Shape Animations (Reduced DOM count) */}
+        {[...Array(3)].map((_, i) => (
           <div
-            key={i}
+            key={`line-${i}`}
             className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent"
             style={{
-              width: `${400 + i * 100}px`,
-              left: `${20 + i * 15}%`,
-              top: `${10 + i * 20}%`,
+              width: `${400 + i * 200}px`,
+              left: `${10 + i * 30}%`,
+              top: `${20 + i * 30}%`,
               transform: `rotate(${-20 + i * 8}deg)`,
-              animation: `linePulse ${6 + i}s infinite`,
-              animationDelay: `${i}s`
+              animation: `linePulse ${6 + i * 2}s infinite`,
+              animationDelay: `${i * 1.5}s`
             }}
           />
         ))}
-
-        {/* Optimized Sharp Geometric Shapes */}
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute bg-[#dd3913]/15"
-            style={{
-              left: `${15 + i * 12}%`,
-              top: `${20 + i * 10}%`,
-              width: `${4 + i}px`,
-              height: `${4 + i}px`,
-              clipPath: i % 3 === 0 ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : i % 3 === 1 ? 'polygon(0% 0%, 100% 0%, 50% 100%)' : 'polygon(0% 0%, 100% 50%, 0% 100%)',
-              animation: `shapeRotate ${20 + i * 2}s infinite linear`,
-              animationDelay: `${i}s`
-            }}
-          />
-        ))}
-
-        {/* Optimized Sharp Grid Pattern */}
-        <div className="absolute inset-0 opacity-6">
-          <div className="grid grid-cols-20 grid-rows-15 h-full w-full">
-            {Array.from({ length: 300 }).map((_, i) => (
-              <div
-                key={i}
-                className="border border-[#dd3913]/10"
-                style={{
-                  animation: `gridPulse ${4 + (i % 3)}s infinite`,
-                  animationDelay: `${(i % 3)}s`
-                }}
-              />
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Main Content */}
@@ -97,15 +80,6 @@ const Home = () => {
         @keyframes linePulse {
           0%, 100% { opacity: 0; transform: scaleX(0); }
           50% { opacity: 0.6; transform: scaleX(1); }
-        }
-        @keyframes shapeRotate {
-          0% { transform: rotate(0deg); opacity: 0; }
-          50% { transform: rotate(180deg); opacity: 0.4; }
-          100% { transform: rotate(360deg); opacity: 0; }
-        }
-        @keyframes gridPulse {
-          0%, 100% { opacity: 0; }
-          50% { opacity: 0.2; }
         }
       `}</style>
     </div>

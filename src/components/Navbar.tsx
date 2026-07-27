@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -9,29 +9,49 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+  const navItems = useMemo(() => [
+    { name: "Home", href: "home" },
+    { name: "About", href: "about" },
+    { name: "Standings", href: "standings" },
+    { name: "Matches", href: "matches" },
+    { name: "Gallery", href: "gallery" },
+  ], []);
 
-      const sections = ["home", "about", "standings", "matches", "gallery", "contact"];
-      const currentSection = sections.find((section) => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 120 && rect.bottom >= 120;
-        }
-        return false;
-      });
+  const handleScroll = useCallback(() => {
+    setIsScrolled(window.scrollY > 50);
 
-      if (currentSection) setActiveSection(currentSection);
-    };
+    const sections = ["home", "about", "standings", "matches", "gallery", "contact"];
+    const currentSection = sections.find((section) => {
+      const element = document.getElementById(section);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        return rect.top <= 120 && rect.bottom >= 120;
+      }
+      return false;
+    });
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    if (currentSection) setActiveSection(currentSection);
   }, []);
 
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    const throttledScroll = () => {
+      if (timeoutId) return;
+      timeoutId = setTimeout(() => {
+        handleScroll();
+        timeoutId = undefined as any;
+      }, 50); // 50ms throttle
+    };
+
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", throttledScroll);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [handleScroll]);
+
   // ✅ Smooth scroll with offset fix
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
 
     if (element) {
@@ -46,16 +66,7 @@ const Navbar = () => {
 
       setTimeout(() => setIsMobileMenuOpen(false), 400);
     }
-  };
-
-  const navItems = [
-    { name: "Home", href: "home" },
-    { name: "About", href: "about" },
-    { name: "Standings", href: "standings" },
-    { name: "Matches", href: "matches" },
-    { name: "Gallery", href: "gallery" },
-    // { name: "Contact", href: "contact" },
-  ];
+  }, []);
 
   return (
     <motion.nav

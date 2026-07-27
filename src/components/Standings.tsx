@@ -65,25 +65,18 @@ const Standings = () => {
 
   return (
     <section className="py-20 px-4 sm:px-8 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c] relative overflow-hidden">
-      {/* Animated grid background */}
+      {/* Optimized CSS-only grid background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 opacity-5">
-          <div className="grid grid-cols-20 grid-rows-16 h-full w-full">
-            {Array.from({ length: 320 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="border border-[#dd3913]/8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 0.15, 0] }}
-                transition={{
-                  duration: Math.random() * 5 + 4,
-                  repeat: Infinity,
-                  delay: Math.random() * 4,
-                }}
-              />
-            ))}
-          </div>
-        </div>
+        <div 
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(221, 57, 19, 1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(221, 57, 19, 1) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+          }}
+        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
