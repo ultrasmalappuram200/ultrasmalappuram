@@ -28,10 +28,13 @@ const Preloader = () => {
         <motion.div
           key="preloader"
           exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#070913] overflow-hidden"
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden"
         >
-          {/* Ambient Background (Dark, no images, no video) */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1a1f3c]/80 via-[#070913] to-[#000000] opacity-100" />
+          {/* Ambient Background matching the primary site blue (#1a1f3c) */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#0f132b] opacity-100" />
+          
+          {/* Subtle Accent Glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(221,57,19,0.05)_0%,transparent_60%)] pointer-events-none" />
           
           {/* Animated Background Grid */}
           <div 
