@@ -3,13 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import ProMemberModal from "./ProMemberModal";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [isProModalOpen, setIsProModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -122,16 +120,16 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Join Us Button */}
           <div className="hidden sm:block">
+            <Link href="/join">
               <motion.button
-                onClick={() => setIsProModalOpen(true)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-2 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-sm uppercase tracking-wider rounded-md transition-all duration-200 shadow-lg"
               >
                 PRO MEMBER
               </motion.button>
+            </Link>
           </div>
 
           {/* Hamburger Button */}
@@ -192,15 +190,11 @@ const Navbar = () => {
                 ))}
 
                 <div className="px-4 pt-2">
-                    <button
-                      onClick={() => {
-                        setIsProModalOpen(true);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-2 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-sm uppercase tracking-wider rounded-md transition-all duration-300 shadow-lg"
-                    >
+                  <Link href="/join" className="block w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                    <button className="w-full px-4 py-2 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-sm uppercase tracking-wider rounded-md transition-all duration-300 shadow-lg">
                       PRO MEMBER
                     </button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -208,7 +202,6 @@ const Navbar = () => {
         </AnimatePresence>
       </div>
 
-      <ProMemberModal isOpen={isProModalOpen} onClose={() => setIsProModalOpen(false)} />
     </motion.nav>
   );
 };

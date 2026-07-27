@@ -3,13 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import ProMemberModal from "./ProMemberModal";
 
 const images = ["/images/img2.webp", "/images/tifo.webp", "/images/bg1.jpeg"];
 
 const Hero = () => {
   const [index, setIndex] = useState(0);
-  const [isProModalOpen, setIsProModalOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -79,15 +77,16 @@ const Hero = () => {
               . Passion, unity, and unwavering support.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <motion.button
-                onClick={() => setIsProModalOpen(true)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-4 sm:px-8 py-4 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-xs sm:text-base lg:text-lg transition-all duration-200 shadow-lg w-full sm:w-auto border-2 border-[#dd3913]/50 rounded-md whitespace-nowrap"
-              >
-                BECOME PRO MEMBER - ULTRAS MALAPPURAM
-              </motion.button>
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full sm:w-auto items-stretch">
+              <Link href="/join" className="flex-1">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center justify-center px-2 sm:px-4 py-4 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-xs sm:text-sm lg:text-base transition-all duration-200 shadow-lg w-full h-full border-2 border-[#dd3913]/50 rounded-md whitespace-nowrap"
+                >
+                  BECOME PRO MEMBER - ULTRAS MALAPPURAM
+                </motion.button>
+              </Link>
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -96,7 +95,7 @@ const Hero = () => {
                   const element = document.getElementById("matches");
                   if (element) element.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="px-8 py-4 border-2 border-white/50 text-white font-semibold text-base sm:text-lg transition-all duration-200 backdrop-blur-sm bg-white/10 hover:bg-white/20 w-full sm:w-auto rounded-md"
+                className="flex-1 flex items-center justify-center px-4 py-4 border-2 border-white/50 text-white font-semibold text-xs sm:text-sm lg:text-base transition-all duration-200 backdrop-blur-sm bg-white/10 hover:bg-white/20 w-full h-full rounded-md whitespace-nowrap"
               >
                 VIEW MATCHES
               </motion.button>
@@ -126,11 +125,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Pro Member Modal */}
-      <ProMemberModal 
-        isOpen={isProModalOpen} 
-        onClose={() => setIsProModalOpen(false)} 
-      />
     </section>
   );
 };
