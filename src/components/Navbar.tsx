@@ -15,12 +15,13 @@ const Navbar = () => {
     { name: "Standings", href: "standings" },
     { name: "Matches", href: "matches" },
     { name: "Gallery", href: "gallery" },
+    { name: "Instagram", href: "instagram" },
   ], []);
 
   const handleScroll = useCallback(() => {
     setIsScrolled(window.scrollY > 50);
 
-    const sections = ["home", "about", "standings", "matches", "gallery", "contact"];
+    const sections = ["home", "about", "standings", "matches", "gallery", "instagram", "contact"];
     const currentSection = sections.find((section) => {
       const element = document.getElementById(section);
       if (element) {

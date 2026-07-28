@@ -72,6 +72,34 @@ img {
   will-change: opacity, transform;
 }
 
+/* Shimmer sweep — used for Instagram embed skeleton loaders */
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Instagram embed normalization.
+   embed.js writes inline width/height on the blockquote + injected iframe, so
+   `!important` is needed to make every card render at an identical size. */
+.ig-frame blockquote.instagram-media,
+.ig-frame iframe.instagram-media {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Hide scrollbar on the mobile Instagram card carousel while keeping it scrollable */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,

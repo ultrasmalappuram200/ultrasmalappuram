@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 const About = dynamic(() => import("@/components/About"), { ssr: false });
 const Gallery = dynamic(() => import("@/components/Gallery"), { ssr: false });
 const VideoGallery = dynamic(() => import("@/components/VideoGallery"), { ssr: false });
+const InstagramFeed = dynamic(() => import("@/components/InstagramFeed"), { ssr: false });
 const Standings = dynamic(() => import("@/components/Standings"), { ssr: false });
 const LastMalappuramMatch = dynamic(() => import("@/components/LastMalappuramMatch"), { ssr: false });
 const Sponsors = dynamic(() => import("@/components/Sponsors"), { ssr: false });
@@ -68,6 +69,7 @@ const Home = () => {
           <Gallery />
         </div>
         <VideoGallery/>
+        <InstagramFeed/>
         <Sponsors/>
         <div id="contact">
           <Footer/>
