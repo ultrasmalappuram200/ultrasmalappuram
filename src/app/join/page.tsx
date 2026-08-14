@@ -158,13 +158,6 @@ export default function JoinPage() {
             </div>
           </motion.div>
 
-          <motion.p
-            variants={itemVariants}
-            className="mt-5 sm:mt-6 text-sm sm:text-base lg:text-lg text-gray-400 font-[Montserrat] leading-relaxed max-w-2xl mx-auto"
-          >
-            One season. One tribe. Full access to everything that makes matchday at{" "}
-            <span className="text-white font-semibold">Malappuram FC</span> ours.
-          </motion.p>
         </motion.header>
 
         {/* ── Benefits + Card ── */}
