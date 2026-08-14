@@ -263,10 +263,10 @@ const Navbar = () => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="lg:hidden fixed inset-0 z-40 bg-[#0d1128] overflow-y-auto overscroll-contain"
+            className="lg:hidden fixed inset-0 z-40 bg-[#0d1128] overflow-y-auto overflow-x-hidden overscroll-contain"
           >
-            {/* Ambience */}
-            <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            {/* Ambience — clipped so the off-canvas glows/crest can't create sideways scroll */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
               <div
                 className="absolute inset-0 opacity-[0.04]"
                 style={{
