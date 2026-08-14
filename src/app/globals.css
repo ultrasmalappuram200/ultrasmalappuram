@@ -72,6 +72,24 @@ img {
   will-change: opacity, transform;
 }
 
+/* Shimmer sweep — CTA buttons on the membership page */
+@keyframes shimmer {
+  0%   { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(220%)  skewX(-12deg); }
+}
+
+/* Holographic foil sweep — privilege member card */
+@keyframes foilSweep {
+  0%        { transform: translateX(-140%) rotate(12deg); }
+  55%, 100% { transform: translateX(240%)  rotate(12deg); }
+}
+
+/* Soft breathing glow — premium accents */
+@keyframes premiumPulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 1; }
+}
+
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { Crown } from "lucide-react";
 
 const images = ["/images/img2.webp", "/images/tifo.webp", "/images/bg1.jpeg"];
 
@@ -61,8 +62,8 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f3c]/85 via-[#1a1f3c]/75 to-[#1a1f3c]/90 pointer-events-none" />
       </div>
 
-      {/* Dot Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      {/* Dot Indicators — desktop only, hidden on mobile */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden lg:flex gap-2">
         {images.map((_, i) => (
           <button
             key={i}
@@ -101,18 +102,20 @@ const Hero = () => {
               . Passion, unity, and unwavering support.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full sm:w-auto items-stretch">
-              <Link href="/join" className="flex-1">
-                <button className="flex items-center justify-center px-2 sm:px-4 py-4 bg-[#dd3913] hover:bg-[#dd3913]/80 text-white font-semibold text-xs sm:text-sm lg:text-base transition-colors duration-200 shadow-lg w-full h-full border-2 border-[#dd3913]/50 rounded-md whitespace-nowrap hover:scale-[1.03] active:scale-[0.98] transform-gpu">
-                  BECOME PRO MEMBER - ULTRAS MALAPPURAM
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 w-full sm:w-auto items-stretch">
+              <Link href="/join" className="flex-1 min-w-0">
+                <button className="group relative flex items-center justify-center gap-2 w-full h-full px-5 py-4 rounded-xl bg-gradient-to-r from-[#a11f0a] via-[#dd3913] to-[#ff5a2f] text-white font-[Montserrat] font-bold text-[11px] sm:text-sm tracking-[0.12em] uppercase border border-white/25 shadow-[0_10px_30px_-8px_rgba(221,57,19,0.7)] hover:shadow-[0_14px_40px_-8px_rgba(221,57,19,0.9)] hover:scale-[1.03] active:scale-[0.98] transition-[transform,box-shadow] duration-200 transform-gpu overflow-hidden">
+                  <Crown className="w-4 h-4 shrink-0" aria-hidden="true" />
+                  <span className="relative z-10 whitespace-nowrap">Become a Privilege Member</span>
+                  <span className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent group-hover:animate-[shimmer_1.1s_ease-in-out_infinite]" />
                 </button>
               </Link>
 
               <button
                 onClick={() => document.getElementById("matches")?.scrollIntoView({ behavior: "smooth" })}
-                className="flex-1 flex items-center justify-center px-4 py-4 border-2 border-white/50 text-white font-semibold text-xs sm:text-sm lg:text-base transition-colors duration-200 bg-white/10 hover:bg-white/20 w-full h-full rounded-md whitespace-nowrap hover:scale-[1.03] active:scale-[0.98] transform-gpu"
+                className="flex-1 min-w-0 flex items-center justify-center px-5 py-4 rounded-xl border border-white/40 text-white font-[Montserrat] font-semibold text-[11px] sm:text-sm tracking-[0.12em] uppercase bg-white/10 hover:bg-white/20 backdrop-blur-sm w-full h-full whitespace-nowrap hover:scale-[1.03] active:scale-[0.98] transition-[transform,background-color] duration-200 transform-gpu"
               >
-                VIEW MATCHES
+                View Matches
               </button>
             </div>
           </motion.div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { Crown } from "lucide-react";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -136,9 +137,12 @@ const Navbar = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-sm uppercase tracking-wider rounded-md transition-all duration-200 shadow-lg"
+                className="group relative flex items-center gap-2 px-4 lg:px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#a11f0a] via-[#dd3913] to-[#ff5a2f] text-white font-semibold text-xs lg:text-sm uppercase tracking-[0.1em] border border-white/20 shadow-[0_8px_24px_-8px_rgba(221,57,19,0.8)] overflow-hidden"
+                style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}
               >
-                PRO MEMBER
+                <Crown className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span className="relative z-10 whitespace-nowrap">Privilege Member</span>
+                <span className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent group-hover:animate-[shimmer_1.1s_ease-in-out_infinite]" />
               </motion.button>
             </Link>
           </div>
@@ -202,8 +206,12 @@ const Navbar = () => {
 
                 <div className="px-4 pt-2">
                   <Link href="/join" className="block w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                    <button className="w-full px-4 py-2 bg-[#dd3913] hover:bg-[#dd3913]/90 text-white font-semibold text-sm uppercase tracking-wider rounded-md transition-all duration-300 shadow-lg">
-                      PRO MEMBER
+                    <button
+                      className="flex w-full items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-[#a11f0a] via-[#dd3913] to-[#ff5a2f] text-white font-bold text-sm uppercase tracking-[0.1em] border border-white/20 shadow-[0_8px_24px_-8px_rgba(221,57,19,0.8)] active:scale-[0.98] transition-transform duration-200"
+                      style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}
+                    >
+                      <Crown className="w-4 h-4 shrink-0" aria-hidden="true" />
+                      Privilege Member
                     </button>
                   </Link>
                 </div>
