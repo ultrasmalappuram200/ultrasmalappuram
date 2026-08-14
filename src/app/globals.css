@@ -84,6 +84,31 @@ img {
   55%, 100% { transform: translateX(240%)  rotate(12deg); }
 }
 
+/* ── Instagram embeds ──
+   embed.js writes inline width/height/margin onto the blockquote and the iframe
+   it swaps in, sizing each card to its own caption length. Override so every
+   card fills its fixed-height frame and the row stays perfectly even. */
+.ig-embed-card blockquote.instagram-media,
+.ig-embed-card iframe.instagram-media {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Scrollbar-free horizontal track (mobile Instagram carousel) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Soft breathing glow — premium accents */
 @keyframes premiumPulse {
   0%, 100% { opacity: 0.45; }

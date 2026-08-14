@@ -3,19 +3,42 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Gate on real readiness instead of a fixed wait: MIN keeps the intro from
+// flashing past on a warm cache, MAX guarantees we never trap the user behind
+// a slow asset.
+const MIN_VISIBLE_MS = 600;
+const MAX_VISIBLE_MS = 2200;
+
 const Preloader = () => {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    
-    // Total duration of the premium animation
-    const timer = setTimeout(() => {
+
+    const start = performance.now();
+    let minTimer: NodeJS.Timeout;
+
+    const hide = () => {
       setShow(false);
       document.body.style.overflow = "";
-    }, 3500);
+    };
 
-    return () => clearTimeout(timer);
+    // Page is ready — hide once the minimum display time has elapsed
+    const onReady = () => {
+      minTimer = setTimeout(hide, Math.max(0, MIN_VISIBLE_MS - (performance.now() - start)));
+    };
+
+    if (document.readyState === "complete") onReady();
+    else window.addEventListener("load", onReady, { once: true });
+
+    const maxTimer = setTimeout(hide, MAX_VISIBLE_MS);
+
+    return () => {
+      clearTimeout(minTimer);
+      clearTimeout(maxTimer);
+      window.removeEventListener("load", onReady);
+      document.body.style.overflow = "";
+    };
   }, []);
 
   // For stagger text animation
@@ -90,7 +113,7 @@ const Preloader = () => {
                   key={index}
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05, ease: "easeOut" }}
+                  transition={{ duration: 0.35, delay: index * 0.022, ease: "easeOut" }}
                   className={`font-[Montserrat] text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase drop-shadow-[0_0_15px_rgba(221,57,19,0.5)] ${
                     char === " " ? "w-3 sm:w-4" : ""
                   } ${index >= 7 ? "text-[#dd3913]" : "text-white"}`}
@@ -104,7 +127,7 @@ const Preloader = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.5, duration: 0.6 }}
+              transition={{ delay: 0.35, duration: 0.4 }}
               className="mt-6 flex flex-col items-center gap-3"
             >
               <div className="flex items-center gap-3 sm:gap-4">

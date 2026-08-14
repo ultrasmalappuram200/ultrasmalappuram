@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# Pre-optimization image backups (originals also recoverable from git history)
+assets-originals/
