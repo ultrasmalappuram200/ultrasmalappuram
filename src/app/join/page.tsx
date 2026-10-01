@@ -150,7 +150,7 @@ export default function JoinPage() {
           <motion.div variants={itemVariants} className="mt-6 sm:mt-8 flex justify-center">
             <div className="inline-flex items-baseline gap-2 sm:gap-3 px-6 sm:px-10 py-3 sm:py-4 -skew-x-6 bg-gradient-to-r from-[#a11f0a] via-[#dd3913] to-[#ff5a2f] border border-white/25 rounded-lg shadow-[0_14px_44px_-12px_rgba(221,57,19,0.9)]">
               <span className="skew-x-6 font-[Montserrat] font-extrabold text-white text-3xl sm:text-4xl lg:text-5xl tracking-tight">
-                ₹350
+                ₹450
               </span>
               <span className="skew-x-6 font-[Montserrat] font-bold text-white/85 text-sm sm:text-base uppercase tracking-[0.2em]">
                 Only
