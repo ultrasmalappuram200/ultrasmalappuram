@@ -1,124 +1,131 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { FaHandshake } from "react-icons/fa";
+import Image, { type StaticImageData } from "next/image";
+import { ArrowUpRight } from "lucide-react";
+import { useReveal } from "@/lib/useReveal";
+import chicking from "../../public/images/sponsors/chicking.png";
+import bismiHypermarket from "../../public/images/sponsors/BismiHyperMarket.webp";
+import bismiConnect from "../../public/images/sponsors/BismiConnect.webp";
+import noSecrets from "../../public/images/sponsors/NoSecrets.webp";
 
-const sponsors = [
-  { name: "Chicking", logo: "/images/sponsors/chicking.png" },
-  { name: "Roadmate", logo: "/images/sponsors/Roadmate.png" },
-  { name: "Ajmi", logo: "/images/sponsors/Ajmi.png" },
-  { name: "Kalliyath", logo: "/images/sponsors/Kalliyath.png" },
-  { name: "EdRoot", logo: "/images/sponsors/edRoot.png" },
+const INSTAGRAM_URL = "https://www.instagram.com/ultras.malappuram/";
+
+interface Sponsor {
+  name: string;
+  logo: StaticImageData;
+  // "transparent": the mark sits on a transparent background; "light": it's baked onto a white box
+  background: "transparent" | "light";
+  // Evens out optical size between the marks
+  scale: number;
+  // Crops a file's built-in padding: the aspect ratio of the band around the mark (object-fit: cover)
+  crop?: string;
+}
+
+const sponsors: Sponsor[] = [
+  { name: "Chicking", logo: chicking, background: "transparent", scale: 1.05 },
+  { name: "Bismi Hypermarket", logo: bismiHypermarket, background: "light", scale: 1.11, crop: "404 / 145" },
+  { name: "Bismi Connect", logo: bismiConnect, background: "light", scale: 0.92 },
+  { name: "NoSecrets", logo: noSecrets, background: "transparent", scale: 1 }
 ];
 
-// Pre-computed positions — no Math.random() at render time
-const PARTICLES = [
-  { top: "12%", left: "8%",  size: 6,  dur: 5.2 },
-  { top: "35%", left: "22%", size: 4,  dur: 6.1 },
-  { top: "58%", left: "45%", size: 7,  dur: 4.8 },
-  { top: "78%", left: "68%", size: 5,  dur: 5.7 },
-  { top: "22%", left: "85%", size: 6,  dur: 6.4 },
-];
+// Every logo is shown as a white mark so the wall reads as one system. Transparent logos are
+// flattened to white; boxed logos are inverted and screen-blended so the white box disappears.
+const LOGO_FILTER: Record<Sponsor["background"], string> = {
+  transparent: "brightness-0 invert",
+  light: "mix-blend-screen [filter:grayscale(1)_contrast(1.2)_invert(1)_brightness(1.6)]"
+};
+
+const pad = (n: number) => String(n).padStart(2, "0");
 
 const Sponsors = () => {
+  const ref = useReveal<HTMLElement>();
+
   return (
-    <section className="relative py-28 px-6 sm:px-10 lg:px-16 bg-[#1a1f3c] overflow-hidden">
-      {/* CSS-only ambient background — zero JS animation cost */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        {PARTICLES.map((p, i) => (
-          <span
-            key={i}
-            className="absolute rounded-full bg-[#dd3913]/25 blur-[2px]"
-            style={{
-              top: p.top,
-              left: p.left,
-              width: p.size,
-              height: p.size,
-              animation: `particleFloat ${p.dur}s ease-in-out infinite`,
-              animationDelay: `${i * 0.6}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto text-center">
-        {/* Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="mb-20"
+    <section
+      ref={ref}
+      aria-labelledby="partners-heading"
+      className="relative bg-[#1a1f3c] px-5 py-24 font-[Montserrat] text-white sm:px-10 sm:py-32 lg:px-16"
+    >
+      <div className="mx-auto max-w-7xl">
+        <div
+          data-reveal
+          className="flex items-center justify-between border-b border-white/10 pb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50 sm:text-xs"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-3 mb-6"
-          >
-            <FaHandshake className="text-[#dd3913] text-3xl drop-shadow-[0_0_15px_rgba(221,57,19,0.8)]" />
-            <span className="text-[#dd3913] text-base font-semibold uppercase tracking-[0.25em] font-[Montserrat]">
-              Our Partners
-            </span>
-            <FaHandshake className="text-[#dd3913] text-3xl drop-shadow-[0_0_15px_rgba(221,57,19,0.8)]" />
-          </motion.div>
+          <span className="flex items-center gap-2.5">
+            <span className="size-1.5 rounded-full bg-[#dd3913]" />
+            Our partners
+          </span>
+          <span className="tabular-nums">({pad(sponsors.length)})</span>
+        </div>
 
+        <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-12 lg:items-end lg:gap-10">
           <h2
-            className="text-5xl sm:text-6xl font-extrabold text-white mb-6 font-[Montserrat]"
-            style={{ letterSpacing: "-0.03em" }}
+            id="partners-heading"
+            data-reveal
+            className="text-[clamp(2.25rem,8vw,6.5rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-balance lg:col-span-8"
           >
-            Proudly{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#dd3913] via-[#ff6530] to-[#dd3913]">
-              Supported By
-            </span>
+            Backed by the ones who <span className="text-[#dd3913]">believe.</span>
           </h2>
-
-          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-[Montserrat]">
-            Together, we build innovation, passion, and excellence — our partners
-            amplify every milestone of success.
+          <p
+            data-reveal
+            style={{ "--reveal-delay": 120 } as React.CSSProperties}
+            className="max-w-sm text-base leading-relaxed text-white/60 sm:text-lg lg:col-span-4 lg:justify-self-end"
+          >
+            Local businesses that stand with Ultras Malappuram, from the first chant to the final whistle.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Sponsor Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-14"
-        >
-          {sponsors.map((sponsor, i) => (
-            <motion.div
+        {/* Logo wall: the 1px gaps over a lighter background draw the hairline grid */}
+        <ul className="mt-14 grid grid-cols-2 gap-px border border-white/10 bg-white/10 [--logo-w:6.5rem] sm:mt-20 sm:[--logo-w:8.5rem] lg:grid-cols-4 lg:[--logo-w:9.5rem]">
+          {sponsors.map((sponsor, index) => (
+            <li
               key={sponsor.name}
-              whileHover={{ scale: 1.08 }}
-              transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
-              className="relative group"
+              data-reveal
+              style={{ "--reveal-delay": index * 90 } as React.CSSProperties}
+              className="group relative flex aspect-square flex-col justify-between overflow-hidden bg-[#1a1f3c] p-4 sm:aspect-4/3 before:absolute before:inset-0 before:origin-bottom before:scale-y-0 before:bg-[#dd3913] before:transition-transform before:duration-500 before:ease-[cubic-bezier(0.65,0,0.35,1)] hover:before:scale-y-100 sm:p-6"
             >
-              {/* Neon Frame */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#dd3913]/50 via-[#ff6530]/30 to-transparent opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
-
-              {/* Card */}
-              <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center shadow-[0_0_25px_rgba(0,0,0,0.4)] h-[220px] transition-all duration-500 group-hover:border-[#dd3913]/40 group-hover:shadow-[0_0_40px_rgba(221,57,19,0.3)]">
-                <div className="w-28 h-28 flex items-center justify-center overflow-hidden rounded-2xl bg-white/10 group-hover:bg-white/20 transition-all duration-500">
-                  <img
-                    src={sponsor.logo}
-                    alt={`${sponsor.name} logo`}
-                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-
-                <h3 className="text-lg mt-6 font-semibold text-white font-[Montserrat] text-center">
-                  {sponsor.name}
-                </h3>
-              </div>
-            </motion.div>
+              <span className="relative text-[11px] font-semibold tabular-nums text-white/40 transition-colors duration-500 group-hover:text-white/80">
+                {pad(index + 1)}
+              </span>
+              <span className="relative flex flex-1 items-center justify-center py-3">
+                <Image
+                  src={sponsor.logo}
+                  alt=""
+                  sizes="(min-width: 1024px) 200px, (min-width: 640px) 175px, 135px"
+                  style={{ width: `calc(var(--logo-w) * ${sponsor.scale})`, aspectRatio: sponsor.crop }}
+                  className={`h-auto max-w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-110 ${LOGO_FILTER[sponsor.background]}`}
+                />
+              </span>
+              <span className="relative text-[10px] font-semibold uppercase tracking-[0.14em] text-white/70 transition-colors duration-500 group-hover:text-white sm:text-xs sm:tracking-[0.18em]">
+                {sponsor.name}
+              </span>
+            </li>
           ))}
-        </motion.div>
+        </ul>
+
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-reveal
+          className="group relative -mt-px flex items-center justify-between gap-6 overflow-hidden border border-white/10 px-5 py-7 before:absolute before:inset-0 before:origin-left before:scale-x-0 before:bg-[#dd3913] before:transition-transform before:duration-700 before:ease-[cubic-bezier(0.65,0,0.35,1)] hover:before:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#dd3913] sm:px-8 sm:py-10"
+        >
+          <span className="relative min-w-0">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50 transition-colors duration-500 group-hover:text-white/80 sm:text-xs">
+              Your brand on the terraces?
+            </span>
+            <span className="mt-3 block text-[clamp(1.75rem,5vw,3.75rem)] font-extrabold uppercase leading-none tracking-[-0.03em]">
+              Become a partner
+            </span>
+            <span className="mt-3 block text-sm text-white/50 transition-colors duration-500 group-hover:text-white/85">
+              Message us on Instagram
+            </span>
+          </span>
+          <span className="relative flex size-14 shrink-0 items-center justify-center rounded-full border border-white/25 transition-colors duration-500 group-hover:border-white group-hover:bg-white group-hover:text-[#dd3913] sm:size-20">
+            <ArrowUpRight className="size-6 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 sm:size-8" aria-hidden />
+          </span>
+        </a>
       </div>
     </section>
   );
