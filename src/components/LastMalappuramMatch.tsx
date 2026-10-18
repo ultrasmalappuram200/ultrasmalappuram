@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { formatPenalties } from "@/lib/standings";
 
 interface Match {
   id: string;
@@ -23,6 +24,8 @@ interface Match {
   date: string;
   home_goals?: number;
   away_goals?: number;
+  home_penalties?: number | null;
+  away_penalties?: number | null;
   highlight?: string;
   is_finished: boolean;
 }
@@ -227,6 +230,11 @@ const LastMalappuramMatch = () => {
                     <div className="text-4xl sm:text-6xl font-extrabold text-[#dd3913] mb-2">
                       {lastMatch.home_goals} - {lastMatch.away_goals}
                     </div>
+                    {formatPenalties(lastMatch) && (
+                      <div className="text-xs sm:text-sm font-semibold text-gray-300 mb-2 whitespace-nowrap">
+                        Penalties {formatPenalties(lastMatch)}
+                      </div>
+                    )}
                     <div className="bg-[#dd3913] text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold uppercase">
                       Final Score
                     </div>

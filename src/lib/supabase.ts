@@ -22,13 +22,14 @@ export interface Database {
           logo: string | null
           played: number
           won: number
-          draw: number
           lost: number
+          pw: number // Penalty shootout wins
+          pl: number // Penalty shootout losses
           gf: number
           ga: number
           gd: number
           points: number
-          last5: string[]
+          last5: string[] // 'W' | 'PW' | 'PL' | 'L'
           created_at: string
           updated_at: string
         }
@@ -38,8 +39,9 @@ export interface Database {
           logo?: string | null
           played?: number
           won?: number
-          draw?: number
           lost?: number
+          pw?: number
+          pl?: number
           gf?: number
           ga?: number
           gd?: number
@@ -54,8 +56,9 @@ export interface Database {
           logo?: string | null
           played?: number
           won?: number
-          draw?: number
           lost?: number
+          pw?: number
+          pl?: number
           gf?: number
           ga?: number
           gd?: number
@@ -76,6 +79,8 @@ export interface Database {
           date: string
           home_goals: number | null
           away_goals: number | null
+          home_penalties: number | null // Shootout score, only when level after 90 minutes
+          away_penalties: number | null
           highlight: string | null
           is_finished: boolean
           created_at: string
@@ -91,6 +96,8 @@ export interface Database {
           date: string
           home_goals?: number | null
           away_goals?: number | null
+          home_penalties?: number | null
+          away_penalties?: number | null
           highlight?: string | null
           is_finished?: boolean
           created_at?: string
@@ -106,6 +113,8 @@ export interface Database {
           date?: string
           home_goals?: number | null
           away_goals?: number | null
+          home_penalties?: number | null
+          away_penalties?: number | null
           highlight?: string | null
           is_finished?: boolean
           created_at?: string

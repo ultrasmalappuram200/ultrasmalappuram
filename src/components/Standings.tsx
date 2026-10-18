@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
+import { POINTS } from '@/lib/standings'
 
 interface Team {
   id: string
@@ -10,8 +11,9 @@ interface Team {
   logo?: string
   played: number
   won: number
-  draw: number
   lost: number
+  pw: number // Penalty shootout wins
+  pl: number // Penalty shootout losses
   gf: number
   ga: number
   gd: number
@@ -28,12 +30,12 @@ const Standings = () => {
   const fetchData = async () => {
     if (!supabase) {
       setTeams([
-        { id: '1', club: 'Malappuram FC', played: 5, won: 3, draw: 1, lost: 1, gf: 8, ga: 4, gd: 4, points: 10 },
-        { id: '2', club: 'Kochi United', played: 5, won: 2, draw: 2, lost: 1, gf: 6, ga: 5, gd: 1, points: 8 },
-        { id: '3', club: 'Thiruvananthapuram FC', played: 5, won: 2, draw: 1, lost: 2, gf: 7, ga: 6, gd: 1, points: 7 },
-        { id: '4', club: 'Kozhikode City', played: 5, won: 1, draw: 3, lost: 1, gf: 5, ga: 4, gd: 1, points: 6 },
-        { id: '5', club: 'Thrissur FC', played: 5, won: 1, draw: 2, lost: 2, gf: 4, ga: 6, gd: -2, points: 5 },
-        { id: '6', club: 'Kannur FC', played: 5, won: 0, draw: 1, lost: 4, gf: 2, ga: 9, gd: -7, points: 1 },
+        { id: '1', club: 'Malappuram FC', played: 5, won: 3, lost: 1, pw: 1, pl: 0, gf: 8, ga: 4, gd: 4, points: 11 },
+        { id: '2', club: 'Kochi United', played: 5, won: 2, lost: 1, pw: 1, pl: 1, gf: 6, ga: 5, gd: 1, points: 9 },
+        { id: '3', club: 'Thiruvananthapuram FC', played: 5, won: 2, lost: 2, pw: 1, pl: 0, gf: 7, ga: 6, gd: 1, points: 8 },
+        { id: '4', club: 'Kozhikode City', played: 5, won: 1, lost: 1, pw: 1, pl: 2, gf: 5, ga: 4, gd: 1, points: 7 },
+        { id: '5', club: 'Thrissur FC', played: 5, won: 1, lost: 2, pw: 0, pl: 2, gf: 4, ga: 6, gd: -2, points: 5 },
+        { id: '6', club: 'Kannur FC', played: 5, won: 0, lost: 4, pw: 0, pl: 1, gf: 2, ga: 9, gd: -7, points: 1 },
       ])
       return
     }
@@ -44,6 +46,7 @@ const Standings = () => {
         .select('*')
         .order('points', { ascending: false })
         .order('gd', { ascending: false })
+        .order('gf', { ascending: false })
 
       if (error) throw error
       setTeams(data || [])
@@ -122,7 +125,7 @@ const Standings = () => {
             <table className="w-full text-white text-sm sm:text-base">
               <thead>
                 <tr className="border-b border-gray-700/50">
-                  {['Pos', 'Team', 'P', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'Pts'].map((head) => (
+                  {['Pos', 'Team', 'P', 'W', 'L', 'PW', 'PL', 'GF', 'GA', 'GD', 'Pts'].map((head) => (
                     <th
                       key={head}
                       className="py-4 px-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-400 font-[Montserrat] text-center first:text-left"
@@ -181,8 +184,9 @@ const Standings = () => {
 
                     <td className="py-4 px-3 text-center font-semibold text-gray-300">{team.played}</td>
                     <td className="py-4 px-3 text-center font-semibold text-[#dd3913]">{team.won}</td>
-                    <td className="py-4 px-3 text-center font-semibold text-gray-300">{team.draw}</td>
                     <td className="py-4 px-3 text-center font-semibold text-gray-400">{team.lost}</td>
+                    <td className="py-4 px-3 text-center font-semibold text-gray-300">{team.pw}</td>
+                    <td className="py-4 px-3 text-center font-semibold text-gray-300">{team.pl}</td>
                     <td className="py-4 px-3 text-center font-semibold text-white">{team.gf}</td>
                     <td className="py-4 px-3 text-center font-semibold text-gray-300">{team.ga}</td>
                     <td className="py-4 px-3 text-center font-bold text-green-400">
@@ -241,12 +245,17 @@ const Standings = () => {
               <div className="text-right font-[Montserrat]">
                 <div className="text-[#dd3913] text-lg font-bold">{team.points} pts</div>
                 <div className="text-gray-400 text-xs">
-                  {team.played}P • {team.won}W • {team.draw}D • {team.lost}L
+                  {team.played}P • {team.won}W • {team.lost}L • {team.pw}PW • {team.pl}PL
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
+
+        {/* Points system legend */}
+        <p className="mt-6 text-center text-xs sm:text-sm text-gray-400 leading-relaxed font-[Montserrat]">
+          W: Win ({POINTS.W} pts) • PW: Penalty shootout win ({POINTS.PW} pts) • PL: Penalty shootout loss ({POINTS.PL} pt) • L: Loss ({POINTS.L} pts)
+        </p>
       </div>
     </section>
   )

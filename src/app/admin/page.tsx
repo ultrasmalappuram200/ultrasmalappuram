@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { applyResult, calculatePoints, formatPenalties, getMatchResults, getResultBadge, sortStandings } from "@/lib/standings";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -13,8 +14,9 @@ interface Standing {
   logo: string | null;
   played: number;
   won: number;
-  draw: number;
   lost: number;
+  pw: number; // Penalty shootout wins
+  pl: number; // Penalty shootout losses
   gf: number;
   ga: number;
   gd: number;
@@ -32,9 +34,33 @@ interface Match {
   date: string;
   home_goals: number | null;
   away_goals: number | null;
+  home_penalties: number | null;
+  away_penalties: number | null;
   highlight: string | null;
   is_finished: boolean;
 }
+
+// Stats the admin enters for a team; played, goal difference and points are calculated
+const STANDING_FIELDS = [
+  { name: 'won', label: 'WON' },
+  { name: 'lost', label: 'LOST' },
+  { name: 'pw', label: 'PEN WON (PW)' },
+  { name: 'pl', label: 'PEN LOST (PL)' },
+  { name: 'gf', label: 'GOALS FOR' },
+  { name: 'ga', label: 'GOALS AGAINST' }
+] as const;
+
+// Played and points are derived from the results under the 3-2-1-0 system
+const readStandingStats = (formData: FormData) => {
+  const value = (name: string) => parseInt(formData.get(name) as string);
+  const won = value('won');
+  const lost = value('lost');
+  const pw = value('pw');
+  const pl = value('pl');
+  const gf = value('gf');
+  const ga = value('ga');
+  return { won, lost, pw, pl, gf, ga, played: won + lost + pw + pl, gd: gf - ga, points: calculatePoints({ won, pw, pl }) };
+};
 
 const AdminDashboard = () => {
   const { user, signOut } = useAuth();
@@ -52,6 +78,7 @@ const AdminDashboard = () => {
   const [deleteItem, setDeleteItem] = useState<{type: 'standing' | 'match', id: string, name: string} | null>(null);
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [scoreMatch, setScoreMatch] = useState<{id: string, homeTeam: string, awayTeam: string} | null>(null);
+  const [scoreForm, setScoreForm] = useState({ home: '', away: '', homePens: '', awayPens: '' });
 
   useEffect(() => {
     fetchData();
@@ -61,17 +88,17 @@ const AdminDashboard = () => {
     if (!supabase) {
       // Use mock data if Supabase not configured
       setStandings([
-        { id: '1', club: 'Malappuram FC', logo: 'https://via.placeholder.com/100x100/FF6B35/FFFFFF?text=MFC', played: 5, won: 3, draw: 1, lost: 1, gf: 8, ga: 4, gd: 4, points: 10, last5: ['W', 'D', 'W', 'L', 'W'] },
-        { id: '2', club: 'Kochi United', logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=KU', played: 5, won: 2, draw: 2, lost: 1, gf: 6, ga: 5, gd: 1, points: 8, last5: ['D', 'W', 'D', 'W', 'L'] },
-        { id: '3', club: 'Thiruvananthapuram FC', logo: 'https://via.placeholder.com/100x100/059669/FFFFFF?text=TVM', played: 5, won: 2, draw: 1, lost: 2, gf: 7, ga: 7, gd: 0, points: 7, last5: ['L', 'W', 'D', 'L', 'W'] },
-        { id: '4', club: 'Kozhikode City', logo: 'https://via.placeholder.com/100x100/DC2626/FFFFFF?text=KC', played: 5, won: 1, draw: 3, lost: 1, gf: 5, ga: 5, gd: 0, points: 6, last5: ['D', 'L', 'W', 'D', 'D'] },
-        { id: '5', club: 'Thrissur Titans', logo: 'https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=TT', played: 5, won: 1, draw: 2, lost: 2, gf: 4, ga: 6, gd: -2, points: 5, last5: ['L', 'D', 'L', 'W', 'D'] },
-        { id: '6', club: 'Kannur Kings', logo: 'https://via.placeholder.com/100x100/EA580C/FFFFFF?text=KK', played: 5, won: 0, draw: 3, lost: 2, gf: 3, ga: 7, gd: -4, points: 3, last5: ['D', 'L', 'D', 'L', 'D'] }
+        { id: '1', club: 'Malappuram FC', logo: 'https://via.placeholder.com/100x100/FF6B35/FFFFFF?text=MFC', played: 5, won: 3, lost: 1, pw: 1, pl: 0, gf: 8, ga: 4, gd: 4, points: 11, last5: ['W', 'PW', 'W', 'L', 'W'] },
+        { id: '2', club: 'Kochi United', logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=KU', played: 5, won: 2, lost: 1, pw: 1, pl: 1, gf: 6, ga: 5, gd: 1, points: 9, last5: ['PW', 'W', 'PL', 'W', 'L'] },
+        { id: '3', club: 'Thiruvananthapuram FC', logo: 'https://via.placeholder.com/100x100/059669/FFFFFF?text=TVM', played: 5, won: 2, lost: 2, pw: 1, pl: 0, gf: 7, ga: 7, gd: 0, points: 8, last5: ['L', 'W', 'PW', 'L', 'W'] },
+        { id: '4', club: 'Kozhikode City', logo: 'https://via.placeholder.com/100x100/DC2626/FFFFFF?text=KC', played: 5, won: 1, lost: 1, pw: 1, pl: 2, gf: 5, ga: 5, gd: 0, points: 7, last5: ['PL', 'L', 'W', 'PW', 'PL'] },
+        { id: '5', club: 'Thrissur Titans', logo: 'https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=TT', played: 5, won: 1, lost: 2, pw: 0, pl: 2, gf: 4, ga: 6, gd: -2, points: 5, last5: ['L', 'PL', 'L', 'W', 'PL'] },
+        { id: '6', club: 'Kannur Kings', logo: 'https://via.placeholder.com/100x100/EA580C/FFFFFF?text=KK', played: 5, won: 0, lost: 2, pw: 1, pl: 2, gf: 3, ga: 7, gd: -4, points: 4, last5: ['PW', 'L', 'PL', 'L', 'PL'] }
       ]);
       setMatches([
-        { id: '1', home_team: 'Malappuram FC', away_team: 'Kochi United', home_image: null, away_image: null, venue: 'Malappuram Stadium', date: '2024-01-15T15:00:00Z', home_goals: 2, away_goals: 1, highlight: 'https://youtube.com/watch?v=example1', is_finished: true },
-        { id: '2', home_team: 'Thiruvananthapuram FC', away_team: 'Kozhikode City', home_image: null, away_image: null, venue: 'Thiruvananthapuram Stadium', date: '2024-02-10T15:00:00Z', home_goals: null, away_goals: null, highlight: null, is_finished: false },
-        { id: '3', home_team: 'Thrissur Titans', away_team: 'Kannur Kings', home_image: null, away_image: null, venue: 'Thrissur Arena', date: '2024-02-17T15:00:00Z', home_goals: null, away_goals: null, highlight: null, is_finished: false }
+        { id: '1', home_team: 'Malappuram FC', away_team: 'Kochi United', home_image: null, away_image: null, venue: 'Malappuram Stadium', date: '2024-01-15T15:00:00Z', home_goals: 2, away_goals: 1, home_penalties: null, away_penalties: null, highlight: 'https://youtube.com/watch?v=example1', is_finished: true },
+        { id: '2', home_team: 'Thiruvananthapuram FC', away_team: 'Kozhikode City', home_image: null, away_image: null, venue: 'Thiruvananthapuram Stadium', date: '2024-02-10T15:00:00Z', home_goals: null, away_goals: null, home_penalties: null, away_penalties: null, highlight: null, is_finished: false },
+        { id: '3', home_team: 'Thrissur Titans', away_team: 'Kannur Kings', home_image: null, away_image: null, venue: 'Thrissur Arena', date: '2024-02-17T15:00:00Z', home_goals: null, away_goals: null, home_penalties: null, away_penalties: null, highlight: null, is_finished: false }
       ]);
       setLoading(false);
       return;
@@ -164,7 +191,7 @@ const AdminDashboard = () => {
     }
 
     if (!supabase) {
-      setStandings(prev => prev.map(s => s.id === standing.id ? { ...standing, logo: logoUrl } : s));
+      setStandings(prev => sortStandings(prev.map(s => s.id === standing.id ? { ...standing, logo: logoUrl } : s)));
       toast.success('Standing updated successfully!');
       return;
     }
@@ -176,8 +203,9 @@ const AdminDashboard = () => {
           club: standing.club,
           played: standing.played,
           won: standing.won,
-          draw: standing.draw,
           lost: standing.lost,
+          pw: standing.pw,
+          pl: standing.pl,
           gf: standing.gf,
           ga: standing.ga,
           gd: standing.gd,
@@ -193,7 +221,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      setStandings(prev => prev.map(s => s.id === standing.id ? { ...standing, logo: logoUrl } : s));
+      setStandings(prev => sortStandings(prev.map(s => s.id === standing.id ? { ...standing, logo: logoUrl } : s)));
       toast.success('Standing updated successfully!');
     } catch (error: any) {
       console.error('Error updating standing:', error);
@@ -250,7 +278,7 @@ const AdminDashboard = () => {
 
     if (!supabase) {
       const newStanding = { ...standing, id: Date.now().toString(), logo: logoUrl };
-      setStandings(prev => [...prev, newStanding]);
+      setStandings(prev => sortStandings([...prev, newStanding]));
       toast.success('Team added successfully!');
       return;
     }
@@ -262,8 +290,9 @@ const AdminDashboard = () => {
           club: standing.club,
           played: standing.played,
           won: standing.won,
-          draw: standing.draw,
           lost: standing.lost,
+          pw: standing.pw,
+          pl: standing.pl,
           gf: standing.gf,
           ga: standing.ga,
           gd: standing.gd,
@@ -280,7 +309,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      setStandings(prev => [...prev, data]);
+      setStandings(prev => sortStandings([...prev, data]));
       toast.success('Team added successfully!');
     } catch (error: any) {
       console.error('Error adding standing:', error);
@@ -382,6 +411,8 @@ const AdminDashboard = () => {
           date: match.date,
           home_goals: match.home_goals,
           away_goals: match.away_goals,
+          home_penalties: match.home_penalties,
+          away_penalties: match.away_penalties,
           highlight: match.highlight,
           is_finished: match.is_finished,
           home_image: match.home_image,
@@ -421,6 +452,8 @@ const AdminDashboard = () => {
           date: match.date,
           home_goals: match.home_goals,
           away_goals: match.away_goals,
+          home_penalties: match.home_penalties,
+          away_penalties: match.away_penalties,
           highlight: match.highlight,
           is_finished: match.is_finished,
           home_image: match.home_image,
@@ -443,111 +476,43 @@ const AdminDashboard = () => {
     }
   };
 
-  const updateStandingsFromMatch = (homeTeam: string, awayTeam: string, homeGoals: number, awayGoals: number) => {
-    setStandings(prev => prev.map(team => {
-      if (team.club === homeTeam) {
-        const newWon = homeGoals > awayGoals ? team.won + 1 : team.won;
-        const newDraw = homeGoals === awayGoals ? team.draw + 1 : team.draw;
-        const newLost = homeGoals < awayGoals ? team.lost + 1 : team.lost;
-        const newGf = team.gf + homeGoals;
-        const newGa = team.ga + awayGoals;
-        const newGd = newGf - newGa;
-        const newPoints = newWon * 3 + newDraw * 1;
-        
-        // Update last 5 results
-        const newLast5 = [...team.last5];
-        if (homeGoals > awayGoals) {
-          newLast5.push('W');
-        } else if (homeGoals === awayGoals) {
-          newLast5.push('D');
-        } else {
-          newLast5.push('L');
-        }
-        // Keep only last 5 results
-        if (newLast5.length > 5) {
-          newLast5.shift();
-        }
-
-        return {
-          ...team,
-          played: team.played + 1,
-          won: newWon,
-          draw: newDraw,
-          lost: newLost,
-          gf: newGf,
-          ga: newGa,
-          gd: newGd,
-          points: newPoints,
-          last5: newLast5
-        };
-      }
-      
-      if (team.club === awayTeam) {
-        const newWon = awayGoals > homeGoals ? team.won + 1 : team.won;
-        const newDraw = homeGoals === awayGoals ? team.draw + 1 : team.draw;
-        const newLost = awayGoals < homeGoals ? team.lost + 1 : team.lost;
-        const newGf = team.gf + awayGoals;
-        const newGa = team.ga + homeGoals;
-        const newGd = newGf - newGa;
-        const newPoints = newWon * 3 + newDraw * 1;
-        
-        // Update last 5 results
-        const newLast5 = [...team.last5];
-        if (awayGoals > homeGoals) {
-          newLast5.push('W');
-        } else if (homeGoals === awayGoals) {
-          newLast5.push('D');
-        } else {
-          newLast5.push('L');
-        }
-        // Keep only last 5 results
-        if (newLast5.length > 5) {
-          newLast5.shift();
-        }
-
-        return {
-          ...team,
-          played: team.played + 1,
-          won: newWon,
-          draw: newDraw,
-          lost: newLost,
-          gf: newGf,
-          ga: newGa,
-          gd: newGd,
-          points: newPoints,
-          last5: newLast5
-        };
-      }
-      
-      return team;
-    }));
-  };
-
-  const markMatchFinished = async (matchId: string, homeGoals: number, awayGoals: number) => {
+  const markMatchFinished = async (matchId: string, homeGoals: number, awayGoals: number, homePens: number | null, awayPens: number | null) => {
     const match = matches.find(m => m.id === matchId);
-    if (!match) return;
+    const results = getMatchResults(homeGoals, awayGoals, homePens, awayPens);
+    if (!match || !results) return;
 
-    // Update standings first
-    updateStandingsFromMatch(match.home_team, match.away_team, homeGoals, awayGoals);
+    // A shootout only happens when the match is level after 90 minutes
+    const isLevel = homeGoals === awayGoals;
+    const finishedMatch = {
+      is_finished: true,
+      home_goals: homeGoals,
+      away_goals: awayGoals,
+      home_penalties: isLevel ? homePens : null,
+      away_penalties: isLevel ? awayPens : null
+    };
+
+    const homeTeam = standings.find(t => t.club === match.home_team);
+    const awayTeam = standings.find(t => t.club === match.away_team);
+    const updatedTeams = [
+      homeTeam && applyResult(homeTeam, results.home, homeGoals, awayGoals),
+      awayTeam && applyResult(awayTeam, results.away, awayGoals, homeGoals)
+    ].filter((team): team is Standing => !!team);
+
+    const applyLocally = () => {
+      setMatches(prev => prev.map(m => m.id === matchId ? { ...m, ...finishedMatch } : m));
+      setStandings(prev => sortStandings(prev.map(t => updatedTeams.find(u => u.id === t.id) ?? t)));
+      toast.success('Match marked as finished and standings updated!');
+    };
 
     if (!supabase) {
-      setMatches(prev => prev.map(m => 
-        m.id === matchId 
-          ? { ...m, is_finished: true, home_goals: homeGoals, away_goals: awayGoals }
-          : m
-      ));
-      toast.success('Match marked as finished and standings updated!');
+      applyLocally();
       return;
     }
 
     try {
       const { error } = await supabase
         .from('matches')
-        .update({
-          is_finished: true,
-          home_goals: homeGoals,
-          away_goals: awayGoals
-        })
+        .update(finishedMatch)
         .eq('id', matchId);
 
       if (error) {
@@ -556,90 +521,32 @@ const AdminDashboard = () => {
         return;
       }
 
-      // Update standings in database
-      const homeTeam = standings.find(t => t.club === match.home_team);
-      const awayTeam = standings.find(t => t.club === match.away_team);
-
-      if (homeTeam) {
-        const newWon = homeGoals > awayGoals ? homeTeam.won + 1 : homeTeam.won;
-        const newDraw = homeGoals === awayGoals ? homeTeam.draw + 1 : homeTeam.draw;
-        const newLost = homeGoals < awayGoals ? homeTeam.lost + 1 : homeTeam.lost;
-        const newGf = homeTeam.gf + homeGoals;
-        const newGa = homeTeam.ga + awayGoals;
-        const newGd = newGf - newGa;
-        const newPoints = newWon * 3 + newDraw * 1;
-        
-        const newLast5 = [...homeTeam.last5];
-        if (homeGoals > awayGoals) {
-          newLast5.push('W');
-        } else if (homeGoals === awayGoals) {
-          newLast5.push('D');
-        } else {
-          newLast5.push('L');
-        }
-        if (newLast5.length > 5) {
-          newLast5.shift();
-        }
-
-        await supabase
+      for (const team of updatedTeams) {
+        const { error: standingError } = await supabase
           .from('standings')
           .update({
-            played: homeTeam.played + 1,
-            won: newWon,
-            draw: newDraw,
-            lost: newLost,
-            gf: newGf,
-            ga: newGa,
-            gd: newGd,
-            points: newPoints,
-            last5: newLast5
+            played: team.played,
+            won: team.won,
+            lost: team.lost,
+            pw: team.pw,
+            pl: team.pl,
+            gf: team.gf,
+            ga: team.ga,
+            gd: team.gd,
+            points: team.points,
+            last5: team.last5
           })
-          .eq('id', homeTeam.id);
+          .eq('id', team.id);
+
+        if (standingError) {
+          console.error('Update standing error:', standingError);
+          toast.error(`Match saved, but failed to update ${team.club} standings: ${standingError.message}`);
+          fetchData();
+          return;
+        }
       }
 
-      if (awayTeam) {
-        const newWon = awayGoals > homeGoals ? awayTeam.won + 1 : awayTeam.won;
-        const newDraw = homeGoals === awayGoals ? awayTeam.draw + 1 : awayTeam.draw;
-        const newLost = awayGoals < homeGoals ? awayTeam.lost + 1 : awayTeam.lost;
-        const newGf = awayTeam.gf + awayGoals;
-        const newGa = awayTeam.ga + homeGoals;
-        const newGd = newGf - newGa;
-        const newPoints = newWon * 3 + newDraw * 1;
-        
-        const newLast5 = [...awayTeam.last5];
-        if (awayGoals > homeGoals) {
-          newLast5.push('W');
-        } else if (homeGoals === awayGoals) {
-          newLast5.push('D');
-        } else {
-          newLast5.push('L');
-        }
-        if (newLast5.length > 5) {
-          newLast5.shift();
-        }
-
-        await supabase
-          .from('standings')
-          .update({
-            played: awayTeam.played + 1,
-            won: newWon,
-            draw: newDraw,
-            lost: newLost,
-            gf: newGf,
-            ga: newGa,
-            gd: newGd,
-            points: newPoints,
-            last5: newLast5
-          })
-          .eq('id', awayTeam.id);
-      }
-
-      setMatches(prev => prev.map(m => 
-        m.id === matchId 
-          ? { ...m, is_finished: true, home_goals: homeGoals, away_goals: awayGoals }
-          : m
-      ));
-      toast.success('Match marked as finished and standings updated!');
+      applyLocally();
     } catch (error: any) {
       console.error('Error marking match as finished:', error);
       toast.error('Failed to mark match as finished');
@@ -725,13 +632,30 @@ const AdminDashboard = () => {
     if (!match) return;
     
     setScoreMatch({ id: matchId, homeTeam: match.home_team, awayTeam: match.away_team });
+    setScoreForm({ home: '', away: '', homePens: '', awayPens: '' });
     setShowScoreModal(true);
   };
 
-  const submitScore = async (homeGoals: number, awayGoals: number) => {
+  const scoreIsLevel = scoreForm.home !== '' && scoreForm.away !== '' && Number(scoreForm.home) === Number(scoreForm.away);
+
+  const submitScore = async () => {
     if (!scoreMatch) return;
-    
-    await markMatchFinished(scoreMatch.id, homeGoals, awayGoals);
+
+    const homeGoals = parseInt(scoreForm.home);
+    const awayGoals = parseInt(scoreForm.away);
+    if (Number.isNaN(homeGoals) || Number.isNaN(awayGoals) || homeGoals < 0 || awayGoals < 0) {
+      toast.error('Enter the score for both teams');
+      return;
+    }
+
+    const homePens = scoreIsLevel && scoreForm.homePens !== '' ? parseInt(scoreForm.homePens) : null;
+    const awayPens = scoreIsLevel && scoreForm.awayPens !== '' ? parseInt(scoreForm.awayPens) : null;
+    if (!getMatchResults(homeGoals, awayGoals, homePens, awayPens)) {
+      toast.error('Match is level: enter the penalty shootout score (it needs a winner)');
+      return;
+    }
+
+    await markMatchFinished(scoreMatch.id, homeGoals, awayGoals, homePens, awayPens);
     setShowScoreModal(false);
     setScoreMatch(null);
   };
@@ -1030,6 +954,9 @@ const AdminDashboard = () => {
                               style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
                             >
                               {match.is_finished ? `${match.home_goals}-${match.away_goals}` : 'TBD'}
+                              {formatPenalties(match) && (
+                                <div className="text-xs text-gray-400 text-right">PENS {formatPenalties(match)}</div>
+                              )}
                             </div>
                           </div>
                         </motion.div>
@@ -1098,13 +1025,21 @@ const AdminDashboard = () => {
                           className="text-center py-4 px-6 text-gray-300 font-bold text-sm uppercase tracking-wider"
                           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
                         >
-                          D
+                          L
                         </th>
-                        <th 
+                        <th
                           className="text-center py-4 px-6 text-gray-300 font-bold text-sm uppercase tracking-wider"
                           style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                          title="Won on penalties"
                         >
-                          L
+                          PW
+                        </th>
+                        <th
+                          className="text-center py-4 px-6 text-gray-300 font-bold text-sm uppercase tracking-wider"
+                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                          title="Lost on penalties"
+                        >
+                          PL
                         </th>
                         <th 
                           className="text-center py-4 px-6 text-gray-300 font-bold text-sm uppercase tracking-wider"
@@ -1192,17 +1127,23 @@ const AdminDashboard = () => {
                           >
                             {team.won}
                           </td>
-                          <td 
-                            className="py-4 px-6 text-center text-yellow-400 font-bold"
-                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
-                          >
-                            {team.draw}
-                          </td>
-                          <td 
+                          <td
                             className="py-4 px-6 text-center text-red-400 font-bold"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
                           >
                             {team.lost}
+                          </td>
+                          <td
+                            className="py-4 px-6 text-center text-green-300 font-bold"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                          >
+                            {team.pw}
+                          </td>
+                          <td
+                            className="py-4 px-6 text-center text-red-300 font-bold"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                          >
+                            {team.pl}
                           </td>
                           <td 
                             className="py-4 px-6 text-center text-gray-300 font-medium"
@@ -1389,7 +1330,7 @@ const AdminDashboard = () => {
                       </div>
 
                       {/* Team Stats */}
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div className="text-center">
                           <div 
                             className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
@@ -1405,27 +1346,13 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         <div className="text-center">
-                          <div 
-                            className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
-                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                          >
-                            GOAL DIFF
-                          </div>
-                          <div 
-                            className={`font-bold text-lg mt-1 ${team.gd >= 0 ? 'text-green-400' : 'text-red-400'}`}
-                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
-                          >
-                            {team.gd >= 0 ? '+' : ''}{team.gd}
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <div 
+                          <div
                             className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
                           >
                             WON
                           </div>
-                          <div 
+                          <div
                             className="text-green-400 font-bold text-lg mt-1"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
                           >
@@ -1433,17 +1360,59 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         <div className="text-center">
-                          <div 
+                          <div
                             className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
                           >
                             LOST
                           </div>
-                          <div 
+                          <div
                             className="text-red-400 font-bold text-lg mt-1"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
                           >
                             {team.lost}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div
+                            className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                          >
+                            PEN W
+                          </div>
+                          <div
+                            className="text-green-300 font-bold text-lg mt-1"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                          >
+                            {team.pw}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div
+                            className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                          >
+                            PEN L
+                          </div>
+                          <div
+                            className="text-red-300 font-bold text-lg mt-1"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                          >
+                            {team.pl}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div
+                            className="text-gray-400 text-xs font-semibold uppercase tracking-wide"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                          >
+                            GOAL DIFF
+                          </div>
+                          <div
+                            className={`font-bold text-lg mt-1 ${team.gd >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                          >
+                            {team.gd >= 0 ? '+' : ''}{team.gd}
                           </div>
                         </div>
                       </div>
@@ -1457,20 +1426,21 @@ const AdminDashboard = () => {
                           LAST 5 RESULTS
                         </div>
                         <div className="flex space-x-2">
-                          {team.last5.map((result, idx) => (
-                            <motion.div
-                              key={idx}
-                              whileHover={{ scale: 1.1 }}
-                              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                                result === 'W' ? 'bg-green-600 text-white' :
-                                result === 'D' ? 'bg-yellow-600 text-white' :
-                                'bg-red-600 text-white'
-                              }`}
-                              style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
-                            >
-                              {result}
-      </motion.div>
-                          ))}
+                          {/* Most recent result first, like superleaguekerala.com */}
+                          {[...team.last5].reverse().map((result, idx) => {
+                            const badge = getResultBadge(result);
+                            return (
+                              <motion.div
+                                key={idx}
+                                whileHover={{ scale: 1.1 }}
+                                title={badge.title}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${badge.className}`}
+                                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                              >
+                                {badge.label}
+                              </motion.div>
+                            );
+                          })}
                         </div>
                       </div>
                     </motion.div>
@@ -1601,11 +1571,16 @@ const AdminDashboard = () => {
                               {match.home_goals !== null ? match.home_goals : '-'}
                             </motion.div>
                           </div>
-                          <div 
-                            className="text-gray-400 font-bold text-xl"
+                          <div
+                            className="text-gray-400 font-bold text-xl text-center"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
                           >
                             VS
+                            {formatPenalties(match) && (
+                              <div className="text-xs text-[#dd3913] mt-1 whitespace-nowrap" title="Penalty shootout">
+                                PENS {formatPenalties(match)}
+                              </div>
+                            )}
                           </div>
                           <div className="text-center">
                             <div className="flex items-center justify-center mb-2">
@@ -1787,14 +1762,7 @@ const AdminDashboard = () => {
                 const updatedStanding = {
                   ...editingStanding,
                   club: formData.get('club') as string,
-                  played: parseInt(formData.get('played') as string),
-                  won: parseInt(formData.get('won') as string),
-                  draw: parseInt(formData.get('draw') as string),
-                  lost: parseInt(formData.get('lost') as string),
-                  gf: parseInt(formData.get('gf') as string),
-                  ga: parseInt(formData.get('ga') as string),
-                  points: parseInt(formData.get('points') as string),
-                  gd: parseInt(formData.get('gf') as string) - parseInt(formData.get('ga') as string)
+                  ...readStandingStats(formData)
                 };
                 updateStanding(updatedStanding, logoFile.size > 0 ? logoFile : undefined);
                 setEditingStanding(null);
@@ -1842,119 +1810,32 @@ const AdminDashboard = () => {
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        PLAYED
-                      </label>
-                      <input
-                        type="number"
-                        name="played"
-                        defaultValue={editingStanding.played}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-            <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        WON
-                      </label>
-                      <input
-                        type="number"
-                        name="won"
-                        defaultValue={editingStanding.won}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-            </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        DRAW
-                      </label>
-                      <input
-                        type="number"
-                        name="draw"
-                        defaultValue={editingStanding.draw}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-            <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        LOST
-                      </label>
-                      <input
-                        type="number"
-                        name="lost"
-                        defaultValue={editingStanding.lost}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-            </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        GOALS FOR
-                      </label>
-                      <input
-                        type="number"
-                        name="gf"
-                        defaultValue={editingStanding.gf}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-        </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        GOALS AGAINST
-                      </label>
-                      <input
-                        type="number"
-                        name="ga"
-                        defaultValue={editingStanding.ga}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        POINTS
-                      </label>
-                      <input
-                        type="number"
-                        name="points"
-                        defaultValue={editingStanding.points}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
+                    {STANDING_FIELDS.map(({ name, label }) => (
+                      <div key={name}>
+                        <label
+                          className="block text-gray-300 text-sm font-semibold mb-2"
+                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                        >
+                          {label}
+                        </label>
+                        <input
+                          type="number"
+                          name={name}
+                          min="0"
+                          defaultValue={editingStanding[name]}
+                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
+                          style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          required
+                        />
+                      </div>
+                    ))}
                   </div>
+                  <p
+                    className="text-gray-400 text-xs"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    Played and points are calculated automatically: Win 3 · Pen win 2 · Pen loss 1 · Loss 0
+                  </p>
                 </div>
                 <div className="flex space-x-4 mt-8">
                   <motion.button
@@ -2010,16 +1891,9 @@ const AdminDashboard = () => {
                 const logoFile = formData.get('logo') as File;
                 const newStanding = {
                   club: formData.get('club') as string,
-                  played: parseInt(formData.get('played') as string),
-                  won: parseInt(formData.get('won') as string),
-                  draw: parseInt(formData.get('draw') as string),
-                  lost: parseInt(formData.get('lost') as string),
-                  gf: parseInt(formData.get('gf') as string),
-                  ga: parseInt(formData.get('ga') as string),
-                  points: parseInt(formData.get('points') as string),
-                  gd: parseInt(formData.get('gf') as string) - parseInt(formData.get('ga') as string),
+                  ...readStandingStats(formData),
                   logo: null,
-                  last5: ['D', 'D', 'D', 'D', 'D']
+                  last5: []
                 };
                 addStanding(newStanding, logoFile.size > 0 ? logoFile : undefined);
                 setShowAddStanding(false);
@@ -2056,119 +1930,32 @@ const AdminDashboard = () => {
                     />
           </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        PLAYED
-                      </label>
-                      <input
-                        type="number"
-                        name="played"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-        </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        WON
-                      </label>
-                      <input
-                        type="number"
-                        name="won"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-        </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        DRAW
-                      </label>
-                      <input
-                        type="number"
-                        name="draw"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        LOST
-                      </label>
-                      <input
-                        type="number"
-                        name="lost"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        GOALS FOR
-                      </label>
-                      <input
-                        type="number"
-                        name="gf"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        GOALS AGAINST
-                      </label>
-                      <input
-                        type="number"
-                        name="ga"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label 
-                        className="block text-gray-300 text-sm font-semibold mb-2"
-                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                      >
-                        POINTS
-                      </label>
-                      <input
-                        type="number"
-                        name="points"
-                        defaultValue={0}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
-                        required
-                      />
-                    </div>
+                    {STANDING_FIELDS.map(({ name, label }) => (
+                      <div key={name}>
+                        <label
+                          className="block text-gray-300 text-sm font-semibold mb-2"
+                          style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                        >
+                          {label}
+                        </label>
+                        <input
+                          type="number"
+                          name={name}
+                          min="0"
+                          defaultValue={0}
+                          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
+                          style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          required
+                        />
+                      </div>
+                    ))}
                   </div>
+                  <p
+                    className="text-gray-400 text-xs"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    Played and points are calculated automatically: Win 3 · Pen win 2 · Pen loss 1 · Loss 0
+                  </p>
                 </div>
                 <div className="flex space-x-4 mt-8">
                   <motion.button
@@ -2221,14 +2008,20 @@ const AdminDashboard = () => {
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
+                const homeGoals = formData.get('home_goals') ? parseInt(formData.get('home_goals') as string) : null;
+                const awayGoals = formData.get('away_goals') ? parseInt(formData.get('away_goals') as string) : null;
+                // Penalties only apply when the match was level after 90 minutes
+                const isLevel = homeGoals !== null && homeGoals === awayGoals;
                 const updatedMatch = {
                   ...editingMatch,
                   home_team: formData.get('home_team') as string,
                   away_team: formData.get('away_team') as string,
                   venue: formData.get('venue') as string,
                   date: formData.get('date') as string,
-                  home_goals: formData.get('home_goals') ? parseInt(formData.get('home_goals') as string) : null,
-                  away_goals: formData.get('away_goals') ? parseInt(formData.get('away_goals') as string) : null,
+                  home_goals: homeGoals,
+                  away_goals: awayGoals,
+                  home_penalties: isLevel && formData.get('home_penalties') ? parseInt(formData.get('home_penalties') as string) : null,
+                  away_penalties: isLevel && formData.get('away_penalties') ? parseInt(formData.get('away_penalties') as string) : null,
                   is_finished: formData.get('is_finished') === 'on'
                 };
                 updateMatch(updatedMatch);
@@ -2322,7 +2115,7 @@ const AdminDashboard = () => {
                       <input
                         type="number"
                         name="home_goals"
-                        defaultValue={editingMatch.home_goals || ''}
+                        defaultValue={editingMatch.home_goals ?? ''}
                         className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
                         style={{ fontFamily: 'Montserrat, sans-serif' }}
                       />
@@ -2337,7 +2130,41 @@ const AdminDashboard = () => {
                       <input
                         type="number"
                         name="away_goals"
-                        defaultValue={editingMatch.away_goals || ''}
+                        defaultValue={editingMatch.away_goals ?? ''}
+                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
+                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="block text-gray-300 text-sm font-semibold mb-2"
+                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                      >
+                        HOME PENS
+                      </label>
+                      <input
+                        type="number"
+                        name="home_penalties"
+                        min="0"
+                        placeholder="Only if level"
+                        defaultValue={editingMatch.home_penalties ?? ''}
+                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
+                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="block text-gray-300 text-sm font-semibold mb-2"
+                        style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                      >
+                        AWAY PENS
+                      </label>
+                      <input
+                        type="number"
+                        name="away_penalties"
+                        min="0"
+                        placeholder="Only if level"
+                        defaultValue={editingMatch.away_penalties ?? ''}
                         className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors backdrop-blur-sm"
                         style={{ fontFamily: 'Montserrat, sans-serif' }}
                       />
@@ -2416,6 +2243,8 @@ const AdminDashboard = () => {
                   date: formData.get('date') as string,
                   home_goals: null,
                   away_goals: null,
+                  home_penalties: null,
+                  away_penalties: null,
                   highlight: null,
                   is_finished: false,
                   home_image: null,
@@ -2610,15 +2439,16 @@ const AdminDashboard = () => {
                   </label>
                   <input
                     type="number"
-                    id="homeGoals"
                     min="0"
+                    placeholder="0"
+                    value={scoreForm.home}
+                    onChange={(e) => setScoreForm(prev => ({ ...prev, home: e.target.value }))}
                     className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
-                    defaultValue="0"
                   />
                 </div>
                 <div>
-                  <label 
+                  <label
                     className="block text-gray-300 text-sm font-semibold mb-2"
                     style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
                   >
@@ -2626,23 +2456,63 @@ const AdminDashboard = () => {
                   </label>
                   <input
                     type="number"
-                    id="awayGoals"
                     min="0"
+                    placeholder="0"
+                    value={scoreForm.away}
+                    onChange={(e) => setScoreForm(prev => ({ ...prev, away: e.target.value }))}
                     className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
-                    defaultValue="0"
                   />
                 </div>
+
+                {/* Level after 90 minutes: no draws, decided by a penalty shootout */}
+                {scoreIsLevel && (
+                  <div className="pt-4 border-t border-gray-700/50">
+                    <div
+                      className="text-[#dd3913] text-sm font-bold"
+                      style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700 }}
+                    >
+                      PENALTY SHOOTOUT
+                    </div>
+                    <p
+                      className="text-gray-400 text-xs mt-1 mb-3"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      Level after 90 minutes. Shootout winner gets 2 points, loser gets 1 point.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {([
+                        { key: 'homePens', team: scoreMatch.homeTeam },
+                        { key: 'awayPens', team: scoreMatch.awayTeam }
+                      ] as const).map(({ key, team }) => (
+                        <div key={key}>
+                          <label
+                            className="block text-gray-300 text-xs font-semibold mb-2 truncate"
+                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+                            title={team}
+                          >
+                            {team}
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            value={scoreForm[key]}
+                            onChange={(e) => setScoreForm(prev => ({ ...prev, [key]: e.target.value }))}
+                            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white focus:border-[#dd3913] focus:outline-none rounded-lg transition-colors"
+                            style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex space-x-4 mt-6">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    const homeGoals = parseInt((document.getElementById('homeGoals') as HTMLInputElement).value);
-                    const awayGoals = parseInt((document.getElementById('awayGoals') as HTMLInputElement).value);
-                    submitScore(homeGoals, awayGoals);
-                  }}
+                  onClick={submitScore}
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl"
                   style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
                 >

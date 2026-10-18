@@ -16,11 +16,13 @@ CREATE TABLE IF NOT EXISTS public.standings (
   won INTEGER DEFAULT 0,
   draw INTEGER DEFAULT 0,
   lost INTEGER DEFAULT 0,
+  pw INTEGER DEFAULT 0, -- Penalty shootout wins
+  pl INTEGER DEFAULT 0, -- Penalty shootout losses
   gf INTEGER DEFAULT 0, -- Goals For
   ga INTEGER DEFAULT 0, -- Goals Against
   gd INTEGER DEFAULT 0, -- Goal Difference
   points INTEGER DEFAULT 0,
-  last5 TEXT[] DEFAULT '{}', -- Last 5 results: W, D, L
+  last5 TEXT[] DEFAULT '{}', -- Last 5 results: W, PW, PL, L
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -36,6 +38,8 @@ CREATE TABLE IF NOT EXISTS public.matches (
   date TIMESTAMP WITH TIME ZONE NOT NULL,
   home_goals INTEGER,
   away_goals INTEGER,
+  home_penalties INTEGER, -- Penalty shootout score (NULL when no shootout)
+  away_penalties INTEGER,
   highlight TEXT,
   is_finished BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
