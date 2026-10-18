@@ -1,146 +1,172 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Image, { type StaticImageData } from "next/image";
+import { ArrowLeft, ArrowRight, Plus, X } from "lucide-react";
+import SectionIntro from "@/components/SectionIntro";
+import { useReveal } from "@/lib/useReveal";
+import gal1 from "../../public/images/Gallery/Gal1.jpeg";
+import gal2 from "../../public/images/Gallery/Gal2.jpeg";
+import gal3 from "../../public/images/Gallery/Gal3.jpeg";
+import gal4 from "../../public/images/Gallery/Gal4.jpeg";
+import gal5 from "../../public/images/Gallery/Gal5.jpeg";
+import gal6 from "../../public/images/Gallery/Gal6.jpeg";
+import gal7 from "../../public/images/Gallery/Gal7.jpeg";
+import gal8 from "../../public/images/Gallery/Gal8.jpeg";
+import stand from "../../public/images/Gallery/img2.webp";
 
-const images = [
-  { src: "/images/Gallery/Gal2.jpeg" },
-  { src: "/images/Gallery/Gal8.jpeg" },
-  { src: "/images/Gallery/Gal3.jpeg" },
-  { src: "/images/Gallery/Gal7.jpeg" },
-  { src: "/images/Gallery/Gal5.jpeg" },
-  { src: "/images/Gallery/Gal6.jpeg" },
-  { src: "/images/Gallery/Gal1.jpeg" },
-  { src: "/images/Gallery/Gal4.jpeg" },
-  { src: "/images/Gallery/img2.webp" },
+const PHOTOS: { src: StaticImageData; alt: string }[] = [
+  { src: gal3, alt: "A supporter leading a chant" },
+  { src: gal2, alt: "The Malappuram FC end in full voice" },
+  { src: gal4, alt: "Supporters with the Ultras Malappuram banner" },
+  { src: gal7, alt: "Fans raising an Ultras Malappuram scarf" },
+  { src: gal5, alt: "A young fan cheering in the stands" },
+  { src: gal8, alt: "Flags and banners along the fence" },
+  { src: gal1, alt: "A family of supporters in matchday shirts" },
+  { src: gal6, alt: "Fans and flags on matchday" },
+  { src: stand, alt: "A packed stand under the United We Stand banner" }
 ];
 
-const Gallery = () => {
-  const [selected, setSelected] = useState<string | null>(null);
+const pad = (n: number) => String(n).padStart(2, "0");
+const ICON_BUTTON =
+  "flex size-11 shrink-0 items-center justify-center rounded-full border border-white/20 transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#0f132b] sm:size-12";
+
+function Lightbox({ index, onClose, onStep }: { index: number; onClose: () => void; onStep: (delta: number) => void }) {
+  const photo = PHOTOS[index];
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const touchX = useRef<number | null>(null);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onStep(1);
+      if (e.key === "ArrowLeft") onStep(-1);
+    };
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose, onStep]);
 
   return (
-    <section
-      id="Gallery"
-      className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#1a1f3c] overflow-hidden"
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Photo viewer"
+      className="fixed inset-0 z-60 flex flex-col bg-[#0b0e22]/95 font-[Montserrat] text-white transition-opacity duration-300 starting:opacity-0"
+      onTouchStart={(e) => {
+        touchX.current = e.touches[0].clientX;
+      }}
+      onTouchEnd={(e) => {
+        if (touchX.current === null) return;
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        if (Math.abs(dx) > 50) onStep(dx < 0 ? 1 : -1);
+        touchX.current = null;
+      }}
     >
-      {/* CSS-only decorative lines — zero JS runtime cost */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        {[0,1,2,3,4,5].map((i) => (
-          <div
-            key={i}
-            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent origin-left"
-            style={{
-              width: `${300 + i * 50}px`,
-              top: `${10 + i * 15}%`,
-              left: `${5 + i * 10}%`,
-              transform: `rotate(${-15 + i * 8}deg) scaleX(0)`,
-              animation: `decoSweep ${5 + i}s ease-in-out infinite`,
-              animationDelay: `${i}s`,
-            }}
-          />
-        ))}
+      <div className="flex items-center justify-between px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60 sm:px-10">
+        <span className="tabular-nums">
+          {pad(index + 1)} / {pad(PHOTOS.length)}
+        </span>
+        <button ref={closeRef} type="button" onClick={onClose} aria-label="Close" className={ICON_BUTTON}>
+          <X className="size-5" aria-hidden />
+        </button>
       </div>
 
-      {/* CONTENT */}
-      <div className="relative z-10 max-w-7xl mx-auto text-center">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="mb-12 sm:mb-16"
-        >
-          <div className="inline-block px-6 py-3 bg-[#dd3913] text-white text-sm font-bold uppercase tracking-wider transform -skew-x-12 shadow-lg mb-6">
-            Gallery
-          </div>
-          <h2
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight"
-            style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}
-          >
-            The Roar Behind{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#dd3913] via-[#ff5a2f] to-[#dd3913]">
-              The Glory
-            </span>
-          </h2>
-        </motion.div>
+      <div className="relative flex-1">
+        <Image
+          key={index}
+          src={photo.src}
+          alt={photo.alt}
+          fill
+          placeholder="blur"
+          sizes="100vw"
+          className="object-contain px-4 transition-opacity duration-300 starting:opacity-0 sm:px-24"
+        />
+      </div>
 
-        {/* ✅ Improved Grid Layout */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4 sm:space-y-6">
-          {images.map((image, i) => (
-            <motion.div
+      <div className="flex items-center justify-between gap-4 px-5 py-5 sm:px-10">
+        <button type="button" onClick={() => onStep(-1)} aria-label="Previous photo" className={ICON_BUTTON}>
+          <ArrowLeft className="size-5" aria-hidden />
+        </button>
+        <p className="text-center text-sm text-white/60">{photo.alt}</p>
+        <button type="button" onClick={() => onStep(1)} aria-label="Next photo" className={ICON_BUTTON}>
+          <ArrowRight className="size-5" aria-hidden />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const Gallery = () => {
+  const ref = useReveal<HTMLElement>();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  // The thumbnail that opened the viewer gets focus back when it closes
+  const openerRef = useRef<HTMLElement | null>(null);
+
+  const close = useCallback(() => {
+    setOpenIndex(null);
+    openerRef.current?.focus();
+  }, []);
+
+  const step = useCallback((delta: number) => {
+    setOpenIndex((i) => (i === null ? i : (i + delta + PHOTOS.length) % PHOTOS.length));
+  }, []);
+
+  return (
+    <section ref={ref} aria-labelledby="gallery-heading" className="relative bg-[#1a1f3c] px-5 py-24 font-[Montserrat] text-white sm:px-10 sm:py-32 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        <SectionIntro
+          id="gallery-heading"
+          label="Gallery"
+          index="04"
+          title={
+            <>
+              Scenes from <span className="text-[#dd3913]">the stands.</span>
+            </>
+          }
+          intro="Matchdays, tifos and the faces behind the noise. Tap any photo to see it full screen."
+        />
+
+        <div className="mt-14 columns-2 gap-3 sm:mt-20 sm:gap-4 lg:columns-3 lg:gap-5">
+          {PHOTOS.map((photo, i) => (
+            <button
               key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              viewport={{ once: true }}
-              onClick={() => setSelected(image.src)}
-              className="relative overflow-hidden rounded-2xl cursor-pointer border border-white/10 shadow-lg hover:shadow-2xl transition-all duration-500 group"
+              type="button"
+              data-reveal
+              style={{ "--reveal-delay": (i % 3) * 80 } as React.CSSProperties}
+              onClick={(e) => {
+                openerRef.current = e.currentTarget;
+                setOpenIndex(i);
+              }}
+              className="group relative mb-3 block w-full break-inside-avoid overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dd3913] sm:mb-4 lg:mb-5"
             >
-              <img
-                src={image.src}
-                alt=""
-                className="w-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110"
-                style={{
-                  height: i % 3 === 0 ? "420px" : i % 2 === 0 ? "340px" : "480px",
-                }}
-                loading="lazy"
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                placeholder="blur"
+                sizes="(min-width: 1024px) 30vw, 50vw"
+                className="h-auto w-full transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
-              {/* <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <span className="text-white font-semibold text-sm bg-[#dd3913]/80 px-4 py-2 rounded-full backdrop-blur-md">
-                  View Image
-                </span>
-              </div> */}
-            </motion.div>
+              <span className="absolute inset-0 bg-[#0f132b]/0 transition-colors duration-500 group-hover:bg-[#0f132b]/35" />
+              <span className="absolute top-3 left-3 text-[11px] font-semibold tabular-nums opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                ({pad(i + 1)})
+              </span>
+              <span className="absolute right-3 bottom-3 flex size-10 scale-50 items-center justify-center rounded-full bg-white text-[#0f132b] opacity-0 transition-[opacity,scale] duration-500 group-hover:scale-100 group-hover:opacity-100">
+                <Plus className="size-5" aria-hidden />
+              </span>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* ✅ Lightbox with subtle glow and zoom */}
-      <AnimatePresence>
-        {selected && (
-          <motion.div
-            className="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelected(null)}
-          >
-            <motion.img
-              src={selected}
-              alt="Selected"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="max-w-full max-h-[90vh] object-contain rounded-2xl border-4 border-[#dd3913]/40 shadow-[0_0_40px_#dd391350]"
-            />
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setSelected(null)}
-              className="absolute top-6 right-6 w-12 h-12 bg-[#dd3913] rounded-full flex items-center justify-center shadow-lg hover:shadow-2xl"
-            >
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {openIndex !== null && <Lightbox index={openIndex} onClose={close} onStep={step} />}
     </section>
   );
 };
 
-export default Gallery;
+export default React.memo(Gallery);

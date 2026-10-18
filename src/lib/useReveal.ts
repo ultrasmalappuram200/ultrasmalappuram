@@ -3,7 +3,8 @@ import { useEffect, useRef } from "react";
 // Marks every [data-reveal] element inside the returned ref with data-revealed once it scrolls
 // into view. One observer per section and no React re-renders; the animation itself is CSS
 // (see globals.css), so reduced-motion users simply get the content without movement.
-export function useReveal<T extends HTMLElement>() {
+// Pass `rescanKey` (e.g. loaded data) when elements are added after the first render.
+export function useReveal<T extends HTMLElement>(rescanKey?: unknown) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
@@ -21,9 +22,9 @@ export function useReveal<T extends HTMLElement>() {
       { rootMargin: "0px 0px -8% 0px", threshold: 0.15 }
     );
 
-    root.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+    root.querySelectorAll("[data-reveal]:not([data-revealed])").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [rescanKey]);
 
   return ref;
 }

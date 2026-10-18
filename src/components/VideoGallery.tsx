@@ -1,136 +1,147 @@
 'use client';
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { FaPlay } from "react-icons/fa";
+import Image from "next/image";
+import { ArrowUpRight, Play } from "lucide-react";
+import SectionIntro from "@/components/SectionIntro";
+import { useReveal } from "@/lib/useReveal";
 
-const videoIds = [
-  "I74rJfajNHA",
-  "E_2Fjuy2nzE",
-  "zzv79QS9QpU",
-  "yorkfkgp33A",
-  "IawPbfvEf3A",
-  "gHHJh3WS89M",
-  // "4Uagd_dclYo",
-  // "VBa17Lhu-4E",
-  // "oeqv85YP7wU",
+const CHANNEL_URL = "https://www.youtube.com/@ultrasmalappuram";
+
+// Titles as they appear on the channel
+const VIDEOS = [
+  { id: "I74rJfajNHA", title: "Game Changer" },
+  { id: "E_2Fjuy2nzE", title: "കൊച്ചി കത്തിക്കൽ · Matchday vlog" },
+  { id: "zzv79QS9QpU", title: "ഇന്നാലും ഇന്റെ റഫറി · MFC vs Kombans" },
+  { id: "yorkfkgp33A", title: "This Is Malappuram" },
+  { id: "IawPbfvEf3A", title: "Matchday vlog · Malappuram FC vs Kannur Warriors" },
+  { id: "gHHJh3WS89M", title: "MFC Team Launch" }
 ];
 
-const VideoItem = ({ id, index }: { id: string; index: number }) => {
-  const [loaded, setLoaded] = useState(false);
-  const thumbnail = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+const pad = (n: number) => String(n).padStart(2, "0");
+
+const VideoGallery = () => {
+  const ref = useReveal<HTMLElement>();
+  const [current, setCurrent] = useState(0);
+  // The YouTube player only loads once someone presses play
+  const [playing, setPlaying] = useState(false);
+  const video = VIDEOS[current];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ scale: 1.05 }}
-      className="group cursor-pointer bg-gradient-to-br from-gray-800/40 to-gray-900/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden shadow-2xl transition-transform duration-200 ease-out hover:-skew-x-1"
-      style={{ minHeight: 0, minWidth: 0 }}
-      onClick={() => setLoaded(true)}
-    >
-      <div className="relative aspect-[16/9] overflow-hidden">
-        {!loaded ? (
-          <>
-            <motion.img
-              src={thumbnail}
-              alt="Video thumbnail"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
-            />
-            {/* Play Button Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                className="w-16 h-16 bg-[#dd3913] rounded-full flex items-center justify-center shadow-2xl"
-              >
-                <FaPlay className="w-6 h-6 text-white ml-1" />
-              </motion.div>
+    <section ref={ref} aria-labelledby="videos-heading" className="relative bg-[#0f132b] px-5 py-24 font-[Montserrat] text-white sm:px-10 sm:py-32 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        <SectionIntro
+          id="videos-heading"
+          label="Videos"
+          index="05"
+          title={
+            <>
+              Watch <span className="text-[#dd3913]">the noise.</span>
+            </>
+          }
+          intro="Matchday vlogs, films and moments from the stands, straight from our YouTube channel."
+        />
+
+        <div className="mt-14 grid gap-8 sm:mt-20 lg:grid-cols-12 lg:gap-10">
+          <div data-reveal className="lg:col-span-8">
+            <div className="relative aspect-video overflow-hidden bg-black">
+              {playing ? (
+                <iframe
+                  key={video.id}
+                  src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
+                  title={video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 size-full"
+                />
+              ) : (
+                <button type="button" onClick={() => setPlaying(true)} aria-label={`Play ${video.title}`} className="group absolute inset-0">
+                  <Image
+                    key={video.id}
+                    src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 60vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:scale-105"
+                  />
+                  <span className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent" />
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="flex size-18 items-center justify-center rounded-full bg-[#dd3913] transition-transform duration-500 group-hover:scale-110 sm:size-24">
+                      <Play className="ml-1 size-7 fill-white text-white sm:size-9" aria-hidden />
+                    </span>
+                  </span>
+                </button>
+              )}
             </div>
-          </>
-        ) : (
-          <motion.iframe
-            src={`https://www.youtube.com/embed/${id}?autoplay=1`}
-            title="Ultras video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full"
-          />
-        )}
+
+            <div className="mt-5 flex items-start justify-between gap-6">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#dd3913]">Now showing · {pad(current + 1)}</p>
+                <h3 className="mt-2 text-xl leading-snug font-bold sm:text-2xl">{video.title}</h3>
+              </div>
+              <a
+                href={`https://www.youtube.com/watch?v=${video.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group hidden shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-white/60 transition-colors duration-300 hover:text-white sm:flex"
+              >
+                YouTube
+                <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" aria-hidden />
+              </a>
+            </div>
+          </div>
+
+          <ol data-reveal style={{ "--reveal-delay": 120 } as React.CSSProperties} className="border-t border-white/10 lg:col-span-4">
+            {VIDEOS.map((item, i) => {
+              const active = i === current;
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrent(i);
+                      setPlaying(true);
+                    }}
+                    aria-current={active}
+                    className="group flex w-full items-center gap-4 border-b border-white/10 py-4 text-left transition-colors duration-300 hover:bg-white/3"
+                  >
+                    <span className="relative aspect-video w-28 shrink-0 overflow-hidden">
+                      <Image src={`https://img.youtube.com/vi/${item.id}/mqdefault.jpg`} alt="" fill sizes="112px" className="object-cover" />
+                      {active && <span className="absolute inset-0 border-2 border-[#dd3913]" />}
+                    </span>
+                    <span className="min-w-0">
+                      <span className={`block text-[11px] font-semibold tabular-nums ${active ? "text-[#dd3913]" : "text-white/40"}`}>{pad(i + 1)}</span>
+                      <span className={`mt-1 line-clamp-2 text-sm leading-snug font-semibold ${active ? "text-white" : "text-white/70 group-hover:text-white"}`}>
+                        {item.title}
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+        <a
+          href={CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-reveal
+          className="group relative mt-14 flex items-center justify-between gap-6 overflow-hidden border border-white/10 px-5 py-7 before:absolute before:inset-0 before:origin-left before:scale-x-0 before:bg-[#dd3913] before:transition-transform before:duration-700 before:ease-[cubic-bezier(0.65,0,0.35,1)] hover:before:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#dd3913] sm:mt-20 sm:px-8 sm:py-10"
+        >
+          <span className="relative min-w-0">
+            <span className="block text-xs font-semibold tracking-widest text-white/50 transition-colors duration-500 group-hover:text-white/80 sm:text-sm">
+              @ultrasmalappuram
+            </span>
+            <span className="mt-3 block text-[clamp(1.75rem,5vw,3.75rem)] leading-none font-extrabold uppercase tracking-[-0.03em]">More on YouTube</span>
+          </span>
+          <span className="relative flex size-14 shrink-0 items-center justify-center rounded-full border border-white/25 transition-colors duration-500 group-hover:border-white group-hover:bg-white group-hover:text-[#dd3913] sm:size-20">
+            <ArrowUpRight className="size-6 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 sm:size-8" aria-hidden />
+          </span>
+        </a>
       </div>
-    </motion.div>
+    </section>
   );
 };
 
-const VideoGallery = () => (
-  <section
-    id="VideoGallery"
-    className="relative py-16 sm:py-24 min-h-screen w-full px-4 sm:px-6 bg-gradient-to-br from-[#1a1f3c] via-[#1a1f3c]/95 to-[#0f132b]"
-  >
-    {/* CSS-only decorative lines */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {[0,1,2,3].map((i) => (
-        <div
-          key={i}
-          className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent origin-left"
-          style={{
-            width: `${250 + i * 50}px`,
-            left: `${25 + i * 20}%`,
-            top: `${20 + i * 25}%`,
-            transform: `rotate(${-20 + i * 15}deg) scaleX(0)`,
-            animation: `decoSweep ${4 + i}s ease-in-out infinite`,
-            animationDelay: `${i}s`,
-          }}
-        />
-      ))}
-    </div>
-
-    <div className="relative z-10 max-w-7xl mx-auto">
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="text-center mb-12 sm:mb-16"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="inline-block mb-6"
-        >
-          <div className="px-6 py-3 bg-[#dd3913] text-white text-sm font-bold uppercase tracking-wider transform -skew-x-12 shadow-lg">
-            Video Gallery
-          </div>
-        </motion.div>
-
-        <h2
-          className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight"
-          style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}
-        >
-          Watch Our{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#dd3913] via-[#dd3913]/90 to-[#dd3913]/70">
-            Story Unfold
-          </span>
-        </h2>
-        <p
-          className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed"
-          style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 400 }}
-        >
-          Experience the passion, energy, and unforgettable moments through our video collection.
-        </p>
-      </motion.div>
-
-      {/* Video Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {videoIds.map((id, index) => (
-          <VideoItem key={id} id={id} index={index} />
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-export default VideoGallery;
+export default React.memo(VideoGallery);

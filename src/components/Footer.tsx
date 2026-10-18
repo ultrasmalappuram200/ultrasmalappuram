@@ -4,6 +4,7 @@ import React, { useEffect, useId, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import RollText from "@/components/RollText";
 import { useReveal } from "@/lib/useReveal";
 import crest from "../../public/images/ultras-logo.png";
 
@@ -36,21 +37,6 @@ const scrollToSection = (event: React.MouseEvent<HTMLAnchorElement>, id: string)
   const navHeight = document.querySelector("nav")?.offsetHeight ?? 0;
   window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navHeight, behavior: "smooth" });
 };
-
-// The label slides up and an orange copy rolls in from below
-function RollText({ children }: { children: string }) {
-  return (
-    <span className="relative inline-flex overflow-hidden">
-      <span className={`transition-transform duration-500 ${EASE} group-hover:-translate-y-full group-focus-visible:-translate-y-full`}>{children}</span>
-      <span
-        aria-hidden
-        className={`absolute inset-0 translate-y-full text-[#dd3913] transition-transform duration-500 ${EASE} group-hover:translate-y-0 group-focus-visible:translate-y-0`}
-      >
-        {children}
-      </span>
-    </span>
-  );
-}
 
 function LocalTime() {
   const [time, setTime] = useState(() => clock.format(new Date()));

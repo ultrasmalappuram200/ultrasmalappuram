@@ -39,37 +39,76 @@ img {
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* Line-pulse animation used in page.tsx background */
-@keyframes linePulse {
-  0%, 100% { opacity: 0; transform: scaleX(0); }
-  50% { opacity: 0.6; transform: scaleX(1); }
-}
-
-/* Decorative diagonal sweep — shared across section backgrounds */
+/* Decorative diagonal sweep — membership page background */
 @keyframes decoSweep {
   0%, 100% { opacity: 0; transform: scaleX(0); }
   50%       { opacity: 0.4; transform: scaleX(1); }
 }
 
-/* Particle float — used in Sponsors section */
-@keyframes particleFloat {
-  0%, 100% { transform: translateY(0); opacity: 0.3; }
-  50%       { transform: translateY(-15px); opacity: 1; }
+/* ── Hero entrance ──
+   The lockup letters rise and the copy fades in, but only once the intro screen starts
+   fading out: Preloader sets html[data-ready] (straight away on routes without the intro). */
+@keyframes hero-rise {
+  from { transform: translateY(105%); }
 }
 
-/* Orb float animations — used in About section */
-@keyframes orbFloat1 {
-  0%, 100% { transform: translate(0,0); opacity: 0.2; }
-  50%       { transform: translate(50px,40px); opacity: 0.4; }
-}
-@keyframes orbFloat2 {
-  0%, 100% { transform: translate(0,0); opacity: 0.15; }
-  50%       { transform: translate(-50px,-30px); opacity: 0.35; }
+@keyframes hero-fade {
+  from { opacity: 0; transform: translateY(1rem); }
 }
 
-/* Static decorative lines — CSS-only, zero JS runtime */
-.deco-line {
-  will-change: opacity, transform;
+.hero-rise {
+  animation: hero-rise 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero-fade {
+  animation: hero-fade 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+html:not([data-ready]) .hero-rise,
+html:not([data-ready]) .hero-fade {
+  animation-play-state: paused;
+}
+
+/* Hero slide timer: the active bar fills over one slide's duration */
+@keyframes hero-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Navbar reading progress, tied to the page scroll on the compositor (no JS).
+   Browsers without scroll-driven animations simply don't show the bar. */
+.scroll-progress {
+  transform: scaleX(0);
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: hero-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* ── Intro screen (Preloader) ── */
+@keyframes intro-logo {
+  from { opacity: 0; transform: scale(0) rotate(-180deg); }
+}
+
+@keyframes intro-heartbeat {
+  50% { transform: scale(1.08); }
+}
+
+@keyframes intro-letter {
+  from { opacity: 0; transform: translateY(40px); }
+}
+
+@keyframes intro-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes intro-breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 /* Shimmer sweep — CTA buttons on the membership page */

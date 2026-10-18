@@ -1,152 +1,180 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Crown } from "lucide-react";
+import { ArrowDown, Crown } from "lucide-react";
+import tifo from "../../public/images/tifo.webp";
+import stand from "../../public/images/img2.webp";
+import banner from "../../public/images/bg1.jpeg";
 
-const images = ["/images/img2.webp", "/images/tifo.webp", "/images/bg1.jpeg"];
+const SLIDES = [
+  { src: tifo, alt: "Ultras Malappuram tifo display in the stands" },
+  { src: stand, alt: "A packed stand of Malappuram FC supporters" },
+  { src: banner, alt: "Supporters gathered behind the Ultras Malappuram banner" }
+];
+
+const SLIDE_SECONDS = 6;
+const LINES = [
+  { word: "ULTRAS", color: "text-white" },
+  { word: "MALAPPURAM", color: "text-[#dd3913]" }
+];
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+const subscribeToMotionPreference = (onChange: () => void) => {
+  const query = window.matchMedia(REDUCED_MOTION);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
+const scrollToMatches = (event: React.MouseEvent) => {
+  const target = document.getElementById("matches");
+  if (!target) return;
+  event.preventDefault();
+  const navHeight = document.querySelector("nav")?.offsetHeight ?? 0;
+  window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navHeight, behavior: "smooth" });
+};
 
 const Hero = () => {
+  const sectionRef = useRef<HTMLElement>(null);
   const [index, setIndex] = useState(0);
-  const [prevIndex, setPrevIndex] = useState<number | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Bumped on every slide change so the progress bar animation restarts
+  const [cycle, setCycle] = useState(0);
+  // Later slides load only after the first one, so they never compete with it
+  const [firstLoaded, setFirstLoaded] = useState(false);
+  const [inView, setInView] = useState(true);
+  // No automatic slideshow for people who prefer reduced motion
+  const autoplay = !useSyncExternalStore(
+    subscribeToMotionPreference,
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => false
+  );
 
-  const advance = useCallback(() => {
-    setIndex((prev) => {
-      setPrevIndex(prev);
-      return (prev + 1) % images.length;
-    });
+  // Pause the slideshow while the hero is off screen
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting));
+    observer.observe(node);
+    return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    timerRef.current = setInterval(advance, 6000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [advance]);
+  const goTo = useCallback((next: number) => {
+    setIndex((next + SLIDES.length) % SLIDES.length);
+    setCycle((c) => c + 1);
+  }, []);
 
   return (
-    <section
-      id="Hero"
-      className="relative w-full min-h-screen overflow-hidden bg-[#1a1f3c] pt-[6rem] sm:pt-[7rem] md:pt-[8rem] lg:pt-[9rem] flex items-center"
-    >
-      {/* ── Slideshow: opacity-only cross-fade, NO scale ── */}
-      {/* Scale on a full-screen image triggers huge GPU re-rasterization every frame */}
-      <div className="absolute inset-0" style={{ contain: "strict" }}>
-
-        {/* Previous image — fades out via CSS */}
-        {prevIndex !== null && (
-          <img
-            key={`prev-${images[prevIndex]}`}
-            src={images[prevIndex]}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center hero-slide-out"
-            style={{ willChange: "opacity" }}
-            fetchPriority="low"
-            decoding="async"
-          />
+    <section ref={sectionRef} className="relative isolate flex min-h-svh flex-col overflow-hidden bg-[#0f132b] font-[Montserrat] text-white">
+      {/* Slides: opacity-only cross-fade */}
+      <div className="absolute inset-0 -z-10">
+        {SLIDES.map((slide, i) =>
+          i === 0 || firstLoaded ? (
+            <Image
+              key={i}
+              src={slide.src}
+              alt={slide.alt}
+              fill
+              priority={i === 0}
+              placeholder="blur"
+              sizes="100vw"
+              onLoad={i === 0 ? () => setFirstLoaded(true) : undefined}
+              className={`object-cover transition-opacity duration-1400 ease-in-out ${i === index ? "opacity-100" : "opacity-0"}`}
+            />
+          ) : null
         )}
-
-        {/* Current image — fades in via CSS */}
-        <img
-          key={`cur-${images[index]}`}
-          src={images[index]}
-          alt="Hero Background"
-          className="absolute inset-0 w-full h-full object-cover object-center hero-slide-in"
-          style={{ willChange: "opacity" }}
-          fetchPriority={index === 0 ? "high" : "auto"}
-          decoding="async"
-        />
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f3c]/85 via-[#1a1f3c]/75 to-[#1a1f3c]/90 pointer-events-none" />
+        {/* Darken the bottom and left, where the type sits */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,#0f132b_8%,rgba(15,19,43,0.6)_45%,rgba(15,19,43,0.35))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(15,19,43,0.75),transparent_65%)]" />
       </div>
 
-      {/* Dot Indicators — desktop only, hidden on mobile */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden lg:flex gap-2">
-        {images.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => { setPrevIndex(index); setIndex(i); }}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === index ? "bg-[#dd3913] w-6" : "bg-white/40"}`}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      {/* @container: the lockup is sized to this column's width (cqw), not the viewport */}
+      <div className="@container mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 pt-24 pb-6 sm:px-10 sm:pt-32 sm:pb-8 lg:px-16">
+        <div className="hero-fade flex items-center justify-between gap-4 border-b border-white/15 pb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/75 sm:text-xs">
+          <span className="flex items-center gap-2.5">
+            <span className="size-1.5 shrink-0 rounded-full bg-[#dd3913]" />
+            Official supporters of Malappuram FC
+          </span>
+          <span className="hidden md:inline">Super League Kerala</span>
+        </div>
 
-      {/* Content */}
-      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-
-          {/* Left — Text Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="lg:col-span-7 space-y-6 lg:space-y-8 text-center lg:text-left"
-          >
-            <div className="px-4 py-2 sm:px-6 sm:py-3 bg-[#dd3913] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider transform -skew-x-12 shadow-lg inline-block">
-              Official Supporters of Malappuram FC
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-[Montserrat] font-extrabold text-white leading-tight">
-              <span className="block">ULTRAS</span>
-              <span className="block text-[#dd3913] transform -skew-x-6">
-                MALAPPURAM
+        <div className="flex flex-1 flex-col justify-end gap-8 pt-16 sm:gap-10">
+          <h1 aria-label="Ultras Malappuram" className="order-1 text-[13.3cqw] font-extrabold leading-[0.82] tracking-[-0.05em] lg:order-2">
+            {LINES.map(({ word, color }, line) => (
+              <span key={word} aria-hidden className={`flex overflow-hidden pb-[0.04em] ${color}`}>
+                {word.split("").map((letter, i) => (
+                  <span key={i} className="hero-rise inline-block" style={{ animationDelay: `${150 + (line * 6 + i) * 45}ms` }}>
+                    {letter}
+                  </span>
+                ))}
               </span>
-            </h1>
+            ))}
+          </h1>
 
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-lg mx-auto lg:mx-0 leading-relaxed font-[Montserrat]">
-              The heartbeat of{" "}
-              <span className="text-[#dd3913] font-semibold">Malappuram FC</span>
-              . Passion, unity, and unwavering support.
+          <div className="hero-fade order-2 flex flex-col gap-6 lg:order-1 lg:ml-auto lg:max-w-md" style={{ animationDelay: "600ms" }}>
+            <p className="text-lg leading-relaxed text-white/80 sm:text-xl">
+              The heartbeat of <span className="font-semibold text-white">Malappuram FC</span>. Passion, unity and unwavering support.
             </p>
-
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 w-full sm:w-auto items-stretch">
-              <Link href="/join" className="flex-1 min-w-0">
-                <button className="group relative flex items-center justify-center gap-2 w-full h-full px-5 py-4 rounded-xl bg-gradient-to-r from-[#a11f0a] via-[#dd3913] to-[#ff5a2f] text-white font-[Montserrat] font-bold text-[11px] sm:text-sm tracking-[0.12em] uppercase border border-white/25 shadow-[0_10px_30px_-8px_rgba(221,57,19,0.7)] hover:shadow-[0_14px_40px_-8px_rgba(221,57,19,0.9)] hover:scale-[1.03] active:scale-[0.98] transition-[transform,box-shadow] duration-200 transform-gpu overflow-hidden">
-                  <Crown className="w-4 h-4 shrink-0" aria-hidden="true" />
-                  <span className="relative z-10 whitespace-nowrap">Become a Privilege Member</span>
-                  <span className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent group-hover:animate-[shimmer_1.1s_ease-in-out_infinite]" />
-                </button>
-              </Link>
-
-              <button
-                onClick={() => document.getElementById("matches")?.scrollIntoView({ behavior: "smooth" })}
-                className="flex-1 min-w-0 flex items-center justify-center px-5 py-4 rounded-xl border border-white/40 text-white font-[Montserrat] font-semibold text-[11px] sm:text-sm tracking-[0.12em] uppercase bg-white/10 hover:bg-white/20 backdrop-blur-sm w-full h-full whitespace-nowrap hover:scale-[1.03] active:scale-[0.98] transition-[transform,background-color] duration-200 transform-gpu"
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/join"
+                className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#dd3913] px-6 py-4 text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-300 hover:bg-[#ff5a2f]"
               >
-                View Matches
-              </button>
+                <Crown className="size-4 shrink-0" aria-hidden />
+                Become a member
+              </Link>
+              <a
+                href="#matches"
+                onClick={scrollToMatches}
+                className="group flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/35 px-6 py-4 text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#0f132b]"
+              >
+                Match centre
+                <ArrowDown className="size-4 shrink-0 transition-transform duration-300 group-hover:translate-y-0.5" aria-hidden />
+              </a>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Right — Logo */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            className="lg:col-span-5 flex justify-center items-center"
+          <div
+            className="hero-fade order-3 flex items-center justify-between gap-6 border-t border-white/15 pt-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60"
+            style={{ animationDelay: "800ms" }}
           >
-            <div className="bg-gradient-to-br from-white/5 to-white/10 border border-white/20 rounded-full p-6 sm:p-8 shadow-2xl">
-              <img
-                src="/images/ultras-logo.png"
-                alt="Ultras Malappuram Logo"
-                className="w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 object-contain rounded-full"
-                fetchPriority="high"
-                decoding="async"
-              />
+            <span className="tabular-nums">
+              {pad(index + 1)} / {pad(SLIDES.length)}
+            </span>
+            <div className="flex gap-2">
+              {SLIDES.map((slide, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-label={`Show photo ${i + 1}: ${slide.alt}`}
+                  aria-current={i === index}
+                  className="relative h-6 w-10 sm:w-16"
+                >
+                  <span className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-white/25" />
+                  {i === index && (
+                    <span
+                      key={cycle}
+                      // When the bar fills, move on; pausing the animation pauses the slideshow too
+                      onAnimationEnd={autoplay ? () => goTo(index + 1) : undefined}
+                      className={`absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 origin-left bg-white ${
+                        autoplay ? "animate-[hero-progress_var(--slide)_linear_forwards]" : "scale-x-100"
+                      } ${inView ? "" : "[animation-play-state:paused]"}`}
+                      style={{ "--slide": `${SLIDE_SECONDS}s` } as React.CSSProperties}
+                    />
+                  )}
+                </button>
+              ))}
             </div>
-          </motion.div>
+            <span className="hidden items-center gap-3 sm:flex">
+              Scroll
+              <span className="h-px w-10 bg-white/60" />
+            </span>
+          </div>
         </div>
       </div>
-
-      {/* CSS-only cross-fade keyframes */}
-      <style>{`
-        .hero-slide-in  { animation: heroFadeIn  1.4s ease-in-out forwards; }
-        .hero-slide-out { animation: heroFadeOut 1.4s ease-in-out forwards; }
-        @keyframes heroFadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes heroFadeOut { from { opacity: 1; } to { opacity: 0; } }
-      `}</style>
     </section>
   );
 };

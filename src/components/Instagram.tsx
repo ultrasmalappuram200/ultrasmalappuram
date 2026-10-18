@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { FaInstagram, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useCallback, useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import SectionIntro from "@/components/SectionIntro";
+import { useReveal } from "@/lib/useReveal";
 
 const PROFILE_URL = "https://www.instagram.com/ultras.malappuram/";
 const HANDLE = "@ultras.malappuram";
@@ -16,8 +17,7 @@ const permalinks = [
   "https://www.instagram.com/p/DbVuYLLyy4T/",
 ];
 
-const IG_GRADIENT =
-  "linear-gradient(45deg, #feda75 0%, #fa7e1e 25%, #d62976 50%, #962fbf 75%, #4f5bd5 100%)";
+const pad = (n: number) => String(n).padStart(2, "0");
 
 declare global {
   interface Window {
@@ -45,9 +45,12 @@ const loadEmbedScript = () =>
     document.body.appendChild(script);
   });
 
+const CONTROL =
+  "flex size-11 items-center justify-center rounded-full border border-white/20 transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#1a1f3c] disabled:pointer-events-none disabled:opacity-30";
+
 const Instagram = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useReveal<HTMLElement>();
+  const trackRef = React.useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
   /** Scrolls the mobile track to a slide. No-op on lg, where the track is a grid. */
@@ -60,7 +63,7 @@ const Instagram = () => {
     if (slide) track.scrollTo({ left: slide.offsetLeft - track.offsetLeft, behavior: "smooth" });
   }, []);
 
-  // Keep the dots in sync when the user scrolls the track directly
+  // Keep the counter in sync when the user scrolls the track directly
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -117,75 +120,35 @@ const Instagram = () => {
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [hydrateEmbeds]);
+  }, [hydrateEmbeds, sectionRef]);
 
   return (
-    <section
-      ref={sectionRef}
-      id="instagram"
-      className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-[#1a1f3c] via-[#161a35] to-[#1a1f3c] overflow-hidden"
-    >
-      {/* CSS-only decorative lines — matches the sibling sections */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="absolute h-px bg-gradient-to-r from-transparent via-[#dd3913]/20 to-transparent origin-left"
-            style={{
-              width: `${320 + i * 70}px`,
-              top: `${12 + i * 22}%`,
-              left: `${6 + i * 14}%`,
-              transform: `rotate(${-14 + i * 9}deg) scaleX(0)`,
-              animation: `decoSweep ${5 + i}s ease-in-out infinite`,
-              animationDelay: `${i * 1.2}s`,
-            }}
-          />
-        ))}
-      </div>
+    <section ref={sectionRef} aria-labelledby="instagram-heading" className="relative bg-[#1a1f3c] px-5 py-24 font-[Montserrat] text-white sm:px-10 sm:py-32 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        <SectionIntro
+          id="instagram-heading"
+          label="Instagram"
+          index="06"
+          title={
+            <>
+              Voice of <span className="text-[#dd3913]">the ultras.</span>
+            </>
+          }
+          intro={`Fresh posts from ${HANDLE} and the club.`}
+        />
 
-      <div className="relative z-10 max-w-7xl mx-auto">
-
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-10 sm:mb-14"
-        >
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-[#dd3913] text-white text-sm font-bold uppercase tracking-wider transform -skew-x-12 shadow-lg mb-6">
-            <FaInstagram className="skew-x-12 text-base" aria-hidden="true" />
-            <span className="skew-x-12">Instagram</span>
-          </div>
-          <h2
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight"
-            style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}
-          >
-            Voice Of{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#dd3913] via-[#ff5a2f] to-[#dd3913]">
-              The Ultras
-            </span>
-          </h2>
-          <p className="mt-4 font-[Montserrat] text-sm sm:text-base text-gray-400">
-            Fresh posts from {HANDLE} and the club
-          </p>
-        </motion.div>
-
-        {/* Embeds */}
         {/* Horizontal snap-carousel below lg, static 3-up grid from lg */}
         <div
           ref={trackRef}
-          className="flex lg:grid lg:grid-cols-3 gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory lg:snap-none no-scrollbar scroll-smooth justify-items-center"
+          data-reveal
+          className="mt-14 flex snap-x snap-mandatory justify-items-center gap-5 overflow-x-auto scroll-smooth no-scrollbar sm:mt-20 lg:grid lg:snap-none lg:grid-cols-3 lg:overflow-visible"
         >
           {permalinks.map((permalink) => (
-            <div
-              key={permalink}
-              className="shrink-0 w-full lg:w-auto snap-center flex justify-center"
-            >
+            <div key={permalink} className="flex w-full shrink-0 snap-center justify-center lg:w-auto">
               <div
                 // Fixed height + `ig-embed-card` (see globals.css) keeps every card
                 // identical regardless of how long each post's content is.
-                className="ig-embed-card relative w-full max-w-[540px] h-[560px] sm:h-[620px] rounded-2xl overflow-hidden border border-white/10 bg-white shadow-[0_16px_44px_-16px_rgba(0,0,0,0.7)]"
+                className="ig-embed-card relative h-[560px] w-full max-w-[540px] overflow-hidden border border-white/10 bg-white sm:h-[620px]"
               >
                 {/* Captions omitted on purpose: they run to wildly different
                     lengths (hashtag/keyword blocks) and wreck the uniform grid. */}
@@ -210,7 +173,7 @@ const Instagram = () => {
 
                 {/* Softens the bottom clip so it reads as a deliberate crop */}
                 <div
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white via-white/85 to-transparent"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white via-white/85 to-transparent"
                   aria-hidden="true"
                 />
               </div>
@@ -222,60 +185,37 @@ const Instagram = () => {
             Sit under the track rather than over it: the cards are iframes, so
             overlaid arrows would cover post content, and touch-swipe is
             swallowed by the iframe — these are the primary way to navigate. */}
-        <div className="lg:hidden mt-6 flex items-center justify-center gap-5">
-          <button
-            onClick={() => goTo(active - 1)}
-            disabled={active === 0}
-            aria-label="Previous post"
-            className="w-11 h-11 rounded-full flex items-center justify-center border border-white/15 bg-white/[0.06] text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/[0.12] hover:border-[#dd3913]/50 active:scale-95 transition-all duration-200"
-          >
-            <FaChevronLeft className="text-sm" aria-hidden="true" />
-          </button>
-
-          <div className="flex items-center gap-2">
-            {permalinks.map((permalink, i) => (
-              <button
-                key={permalink}
-                onClick={() => goTo(i)}
-                aria-label={`Go to post ${i + 1}`}
-                aria-current={i === active}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  i === active ? "w-6 bg-[#dd3913]" : "w-2 bg-white/30 hover:bg-white/50"
-                }`}
-              />
-            ))}
+        <div className="mt-6 flex items-center justify-between lg:hidden">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50 tabular-nums">
+            {pad(active + 1)} / {pad(permalinks.length)}
+          </span>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => goTo(active - 1)} disabled={active === 0} aria-label="Previous post" className={CONTROL}>
+              <ArrowLeft className="size-5" aria-hidden />
+            </button>
+            <button type="button" onClick={() => goTo(active + 1)} disabled={active === permalinks.length - 1} aria-label="Next post" className={CONTROL}>
+              <ArrowRight className="size-5" aria-hidden />
+            </button>
           </div>
-
-          <button
-            onClick={() => goTo(active + 1)}
-            disabled={active === permalinks.length - 1}
-            aria-label="Next post"
-            className="w-11 h-11 rounded-full flex items-center justify-center border border-white/15 bg-white/[0.06] text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/[0.12] hover:border-[#dd3913]/50 active:scale-95 transition-all duration-200"
-          >
-            <FaChevronRight className="text-sm" aria-hidden="true" />
-          </button>
         </div>
 
-        {/* Follow CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="mt-10 sm:mt-12 flex justify-center"
+        <a
+          href={PROFILE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-reveal
+          className="group relative mt-14 flex items-center justify-between gap-6 overflow-hidden border border-white/10 px-5 py-7 before:absolute before:inset-0 before:origin-left before:scale-x-0 before:bg-[#dd3913] before:transition-transform before:duration-700 before:ease-[cubic-bezier(0.65,0,0.35,1)] hover:before:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#dd3913] sm:mt-20 sm:px-8 sm:py-10"
         >
-          <a
-            href={PROFILE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative inline-flex items-center gap-3 px-8 sm:px-10 py-4 rounded-xl font-[Montserrat] font-bold text-xs sm:text-sm uppercase tracking-[0.16em] text-white border border-white/20 shadow-[0_12px_36px_-12px_rgba(214,41,118,0.9)] hover:scale-[1.03] active:scale-[0.98] transition-transform duration-200 overflow-hidden"
-            style={{ background: IG_GRADIENT }}
-          >
-            <FaInstagram className="text-lg shrink-0" aria-hidden="true" />
-            <span className="relative z-10">Follow {HANDLE}</span>
-            <span className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent group-hover:animate-[shimmer_1.1s_ease-in-out_infinite]" />
-          </a>
-        </motion.div>
+          <span className="relative min-w-0">
+            <span className="block text-xs font-semibold tracking-widest text-white/50 transition-colors duration-500 group-hover:text-white/80 sm:text-sm">
+              {HANDLE}
+            </span>
+            <span className="mt-3 block text-[clamp(1.75rem,5vw,3.75rem)] leading-none font-extrabold uppercase tracking-[-0.03em]">Follow the stand</span>
+          </span>
+          <span className="relative flex size-14 shrink-0 items-center justify-center rounded-full border border-white/25 transition-colors duration-500 group-hover:border-white group-hover:bg-white group-hover:text-[#dd3913] sm:size-20">
+            <ArrowUpRight className="size-6 transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:rotate-45 sm:size-8" aria-hidden />
+          </span>
+        </a>
       </div>
     </section>
   );

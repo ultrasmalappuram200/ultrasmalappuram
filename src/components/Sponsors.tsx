@@ -3,6 +3,7 @@
 import React from "react";
 import Image, { type StaticImageData } from "next/image";
 import { ArrowUpRight } from "lucide-react";
+import SectionIntro from "@/components/SectionIntro";
 import { useReveal } from "@/lib/useReveal";
 import chicking from "../../public/images/sponsors/chicking.png";
 import bismiHypermarket from "../../public/images/sponsors/BismiHyperMarket.webp";
@@ -48,33 +49,17 @@ const Sponsors = () => {
       className="relative bg-[#1a1f3c] px-5 py-24 font-[Montserrat] text-white sm:px-10 sm:py-32 lg:px-16"
     >
       <div className="mx-auto max-w-7xl">
-        <div
-          data-reveal
-          className="flex items-center justify-between border-b border-white/10 pb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50 sm:text-xs"
-        >
-          <span className="flex items-center gap-2.5">
-            <span className="size-1.5 rounded-full bg-[#dd3913]" />
-            Our partners
-          </span>
-          <span className="tabular-nums">({pad(sponsors.length)})</span>
-        </div>
-
-        <div className="mt-10 grid gap-6 sm:mt-14 lg:grid-cols-12 lg:items-end lg:gap-10">
-          <h2
-            id="partners-heading"
-            data-reveal
-            className="text-[clamp(2.25rem,8vw,6.5rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-balance lg:col-span-8"
-          >
-            Backed by the ones who <span className="text-[#dd3913]">believe.</span>
-          </h2>
-          <p
-            data-reveal
-            style={{ "--reveal-delay": 120 } as React.CSSProperties}
-            className="max-w-sm text-base leading-relaxed text-white/60 sm:text-lg lg:col-span-4 lg:justify-self-end"
-          >
-            Local businesses that stand with Ultras Malappuram, from the first chant to the final whistle.
-          </p>
-        </div>
+        <SectionIntro
+          id="partners-heading"
+          label="Our partners"
+          index="07"
+          title={
+            <>
+              Backed by the ones who <span className="text-[#dd3913]">believe.</span>
+            </>
+          }
+          intro="Local businesses that stand with Ultras Malappuram, from the first chant to the final whistle."
+        />
 
         {/* Logo wall: the 1px gaps over a lighter background draw the hairline grid */}
         <ul className="mt-14 grid grid-cols-2 gap-px border border-white/10 bg-white/10 [--logo-w:6.5rem] sm:mt-20 sm:[--logo-w:8.5rem] lg:grid-cols-4 lg:[--logo-w:9.5rem]">
