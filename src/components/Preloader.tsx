@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Gate on real readiness instead of a fixed wait: MIN keeps the intro from
@@ -9,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const MIN_VISIBLE_MS = 600;
 const MAX_VISIBLE_MS = 2200;
 
-const Preloader = () => {
+const PreloaderIntro = () => {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
@@ -167,6 +168,13 @@ const Preloader = () => {
       )}
     </AnimatePresence>
   );
+};
+
+// Admin pages skip the fan intro; decided once, on the first page load
+const Preloader = () => {
+  const pathname = usePathname();
+  const [skipIntro] = useState(() => pathname.startsWith("/admin"));
+  return skipIntro ? null : <PreloaderIntro />;
 };
 
 export default React.memo(Preloader);
